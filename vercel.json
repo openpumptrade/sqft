@@ -1,0 +1,1 @@
+{ "outputDirectory": "public", "buildCommand": "", "installCommand": "", "rewrites": [ { "source": "/((?!api/).*)", "destination": "/index.html" } ] }

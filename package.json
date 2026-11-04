@@ -1,0 +1,20 @@
+{
+  "name": "sqft",
+  "version": "1.0.0",
+  "description": "SQFT: fees become square feet. A pump.fun coin whose creator rewards are claimed, converted to USDC, bridged to Parcl and turned into long positions on real estate price indices, city by city, every cycle.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "art": "python3 tools/pixelart.py"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.95.3",
+    "bs58": "^6.0.0",
+    "pumpkit": "file:./vendor/pumpkit"
+  }
+}
