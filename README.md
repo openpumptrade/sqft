@@ -9,8 +9,8 @@ A pump.fun coin whose creator rewards are claimed, converted to USDC, bridged to
 Nothing held by the site. A public receipt at every hop.</p>
 
 <p align="center">
-  <a href="https://www.sqft.fun">sqft.fun</a> ·
-  <a href="https://www.sqft.fun/land">live receipts</a> ·
+  <a href="https://sqftfun.vercel.app">sqftfun.vercel.app</a> ·
+  <a href="https://sqftfun.vercel.app/land">live receipts</a> · <a href="https://sqft-production.up.railway.app/api/engine">api</a> ·
   <a href="https://x.com/sqftfun">@sqftfun</a>
 </p>
 
