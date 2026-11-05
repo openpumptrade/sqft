@@ -13,6 +13,8 @@ const ORDER = Object.keys(CITY);
 const esc = s => String(s).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 const num = (v, d = 2) => (+Number(v).toFixed(d)).toLocaleString(undefined, { maximumFractionDigits: d });
 const sqftFmt = v => { v = Number(v) || 0; return v === 0 ? '0' : v < 0.01 ? v.toFixed(4) : v < 1 ? v.toFixed(3) : v < 100 ? v.toFixed(2) : num(v, 0); };
+const text = (el, v) => { if (el.textContent !== v) el.textContent = v; };
+const cls = (el, v) => { if (el.className !== v) el.className = v; };
 const pctFmt = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${(Math.abs(v || 0) * 100).toFixed(2)}%`;
 
 function sparkline(points, w = 64, h = 16) {
@@ -58,24 +60,27 @@ export class LotStrip {
         this.grid.appendChild(card);
         this.cards.set(key, card);
       }
-      card.querySelector('.tkr').textContent = d.label ?? LABEL[key] ?? key;
-      card.querySelector('.photo').alt = d.city ?? CITY[key] ?? key;
-      card.title = d.city ?? CITY[key] ?? key;
+      const city = d.city ?? CITY[key] ?? key;
+      text(card.querySelector('.tkr'), d.label ?? LABEL[key] ?? key);
+      const photo = card.querySelector('.photo'); if (photo.alt !== city) photo.alt = city;
+      if (card.title !== city) card.title = city;
       const mv = card.querySelector('.move');
       const ch = Number(d.change_1d) || 0;
-      mv.textContent = d.price != null ? pctFmt(ch) : '';
-      mv.className = `move ${ch > 0 ? 'up' : ch < 0 ? 'down' : ''}`;
-      card.querySelector('.price').textContent = d.price != null ? `$${num(d.price, 2)} / sqft` : '–';
+      text(mv, d.price != null ? pctFmt(ch) : '');
+      cls(mv, `move ${ch > 0 ? 'up' : ch < 0 ? 'down' : ''}`);
+      text(card.querySelector('.price'), d.price != null ? `$${num(d.price, 2)} / sqft` : '–');
       const held = Number(d.sqft) || 0, reserved = Number(d.reserved) || 0;
-      card.querySelector('.held b').textContent = held > 0 ? `${sqftFmt(held)} sqft · $${num(d.notional ?? held * (d.price ?? 0), 0)}` : reserved > 0 ? `${sqftFmt(reserved)} sqft under contract` : 'No position yet';
-      card.classList.toggle('empty', held <= 0);
+      text(card.querySelector('.held b'), held > 0 ? `${sqftFmt(held)} sqft · $${num(d.notional ?? held * (d.price ?? 0), 0)}` : reserved > 0 ? `${sqftFmt(reserved)} sqft under contract` : 'No position yet');
+      if (card.classList.contains('empty') !== (held <= 0)) card.classList.toggle('empty', held <= 0);
       const trend = card.querySelector('.trend');
       const svg = sparkline(d.spark);
       if (trend.dataset.svg !== svg) { trend.innerHTML = svg; trend.dataset.svg = svg; }
-      trend.className = `trend ${d.change_30d > 0 ? 'up' : d.change_30d < 0 ? 'down' : ''}`;
+      cls(trend, `trend ${d.change_30d > 0 ? 'up' : d.change_30d < 0 ? 'down' : ''}`);
     }
     for (const [key, card] of this.cards) if (!keys.has(key)) { card.remove(); this.cards.delete(key); }
-    for (const key of ORDER) { const c = this.cards.get(key); if (c) this.grid.appendChild(c); }
+    // keep the canonical order, but only move nodes that are actually out of place (re-appending restarts animations and image decodes)
+    const want = ORDER.map(k => this.cards.get(k)).filter(Boolean);
+    want.forEach((c, i) => { if (this.grid.children[i] !== c) this.grid.insertBefore(c, this.grid.children[i] ?? null); });
   }
 
   allocate({ sqft = 0, label = null } = {}) {

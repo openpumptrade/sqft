@@ -159,7 +159,12 @@ function renderHome() {
   if (seenOrders != null && newest > seenOrders) for (const o of orders.filter(o => o.at > seenOrders).slice(0, 3)) scene.allocate({ sqft: o.sqft, label: o.label ?? o.name });
   seenOrders = newest;
 }
-setInterval(() => { if (location.pathname === '/' && engineData) renderHome(); }, 1000);
+function tickHome() {
+  const d = engineData; if (!d || location.pathname !== '/') return;
+  const f = d.flow, now = Date.now();
+  if (f.next_run) { setText('hmLeft', until(f.next_run)); segments($('hmRuler'), 1 - Math.max(0, f.next_run - now) / f.cycle_ms); }
+}
+setInterval(tickHome, 1000);
 
 // ---------- the land page ----------
 let landTimer = null;
