@@ -105,4 +105,17 @@ tools/pixelart.py  brand art (PIL), regenerates the PNGs in public/
 vendor/pumpkit     Solana / pump.fun toolkit (claims, swaps, transfers)
 ```
 
+## Photo credits
+
+The lots on the map show real photographs of each city, from Wikimedia Commons:
+
+- **USA**: [Suburbia by David Shankbone.jpg](https://commons.wikimedia.org/wiki/File:Suburbia_by_David_Shankbone.jpg) · David Shankbone · CC BY-SA 3.0
+- **New York City**: [One World Trade Center and New York Sunset.jpg](https://commons.wikimedia.org/wiki/File:One_World_Trade_Center_and_New_York_Sunset.jpg) · ID 2649771 · CC0
+- **Chicago**: [Morning view of the downtown skyline from near Morgan Point along Lakefront Trail, Chicago, 2025.jpg](https://commons.wikimedia.org/wiki/File:Morning_view_of_the_downtown_skyline_from_near_Morgan_Point_along_Lakefront_Trail,_Chicago,_2025.jpg) · DimiTalen · CC0
+- **Los Angeles**: [Griffith Observatory with Downtown Los Angeles In The Background - 54084315490.jpg](https://commons.wikimedia.org/wiki/File:Griffith_Observatory_with_Downtown_Los_Angeles_In_The_Background_-_54084315490.jpg) · The Fun Chronicles · CC0
+- **Miami**: [Miami skyline from Biscayne Bay, Florida LCCN2011634548.tif](https://commons.wikimedia.org/wiki/File:Miami_skyline_from_Biscayne_Bay,_Florida_LCCN2011634548.tif) · Carol M. Highsmith · Public domain
+- **Austin**: [Lady Bird Lake in Austin, Texas.jpg](https://commons.wikimedia.org/wiki/File:Lady_Bird_Lake_in_Austin,_Texas.jpg) · Rish0203 · CC0
+- **Washington, DC**: [United States Capitol - west front edit.jpg](https://commons.wikimedia.org/wiki/File:United_States_Capitol_-_west_front_edit.jpg) · Architect of the Capitol · Public domain
+- **San Francisco**: [San Francisco city skyline.jpg](https://commons.wikimedia.org/wiki/File:San_Francisco_city_skyline.jpg) · Lisafern · CC0
+
 Not financial advice. Perpetual futures carry funding and can be liquidated; at 1x on a daily-marked index that risk is small but not zero. The engine is the only thing that trades, and it only ever buys.

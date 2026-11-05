@@ -1,6 +1,6 @@
 // The land: a surveyor's plat map drawn into a low-resolution buffer and scaled up
 // with hard edges. Paper with a survey grid and contour lines, a river, roads, and
-// eight lots (one per city index). Lots fill with houses as square feet are bought;
+// eight lots (one per city index), each showing a real photo of its city. Lots fill with houses as square feet are bought;
 // dollars still on the way show as survey stakes. A surveyor walks the roads.
 //
 //   setLots([{ key, label, sqft, reserved }])   what each lot holds; drives houses and stakes
@@ -100,6 +100,8 @@ export class LandScene {
     this.particles = []; this.labels = []; this.stakes = [];
     this.sweepAt = -9;
     this.surveyor = { x: 0, y: 0, tx: 0, ty: 0, walk: 0, job: null, idleAt: 0 };
+    this.photos = {};                     // key -> HTMLImageElement, a real photo of each city drawn inside its lot
+    for (const [key] of DEFAULT_LOTS) this.loadPhoto(key);
     canvas.style.cursor = 'pointer';
     canvas.addEventListener('pointerdown', () => { if (!this.backdrop && this.lots.length) this.queue.push({ lot: this.lots[(Math.random() * this.lots.length) | 0], kind: 'stake' }); });
     new ResizeObserver(() => this.resize()).observe(canvas);
@@ -109,11 +111,22 @@ export class LandScene {
     requestAnimationFrame(this.frame);
   }
 
+  loadPhoto(key) {
+    if (this.photos[key]) return;
+    const im = new Image();
+    im.decoding = 'async';
+    im.src = `/cities/${key.toLowerCase()}.jpg`;
+    im.onload = () => { this.photos[key] = im; };
+    im.onerror = () => { delete this.photos[key]; };
+    this.photos[key] = im;
+  }
+
   // ---------- public ----------
   setActivity({ running, level = 0 }) { this.running = running; this.level = running ? Math.max(0.12, clamp01(level)) : 0; }
   setLots(data) {
     if (!Array.isArray(data) || !data.length) return;
     this.lotData = data.map(d => ({ key: d.key ?? d.name, label: d.label ?? d.key, sqft: Number(d.sqft) || 0, reserved: Number(d.reserved) || 0 }));
+    for (const d of this.lotData) this.loadPhoto(d.key);
     if (this.lots.length !== this.lotData.length) this.build();
     this.sync(this.first);
     this.first = false;
@@ -146,6 +159,10 @@ export class LandScene {
     this.buf = Object.assign(document.createElement('canvas'), { width: W, height: H });
     this.bctx = this.buf.getContext('2d');
     this.img = this.bctx.createImageData(W, H);
+    this.obuf = Object.assign(document.createElement('canvas'), { width: W, height: H });
+    this.octx = this.obuf.getContext('2d');
+    this.ovl = this.octx.createImageData(W, H);
+    this.target = this.img;
     this.build();
     this.sync(true);
   }
@@ -323,28 +340,50 @@ export class LandScene {
         if (cl > 0.66) { const k = 1 - Math.min(0.09, (cl - 0.66) * 0.6); r *= k; g *= k; b *= k; }
       }
       if (b > r + 30 && g > r && ((x + ((t * 6) | 0)) % 11 === 0) && (y % 3 === 0)) { r += 40; g += 30; b += 20; }
-      if (sweepY >= 0 && Math.abs(y - sweepY) < 1.5) { r = (r + ORANGE[0] * 2) / 3; g = (g + ORANGE[1] * 2) / 3; b = (b + ORANGE[2] * 2) / 3; }
       d[o] = r; d[o + 1] = g; d[o + 2] = b; d[o + 3] = 255;
     }
-    for (const l of this.lots) this.drawLot(l);
-    for (const k of this.stakes) this.sprite(STAKE, k.x, k.y);
-    for (const b of this.builds) this.drawBuild(b);
-    this.drawSurveyor();
-    for (const p of this.particles) this.px(p.x, p.y, p.c);
     this.bctx.putImageData(img, 0, 0);
     const { ctx, dpr, w, h, P } = this;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(this.buf, 0, 0, W * P, H * P);
+    // the photo of each city inside its boundary, cover-fitted, with a little shade at the foot for the sprites
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    for (const l of this.lots) {
+      const im = this.photos[l.key];
+      if (!im || !im.complete || !im.naturalWidth) continue;
+      const dx = (l.x + 1) * P, dy = (l.y + 1) * P, dw = (l.w - 2) * P, dh = (l.h - 2) * P;
+      const s = Math.max(dw / im.naturalWidth, dh / im.naturalHeight), sw = dw / s, sh = dh / s;
+      ctx.drawImage(im, (im.naturalWidth - sw) / 2, (im.naturalHeight - sh) / 2, sw, sh, dx, dy, dw, dh);
+      const g = ctx.createLinearGradient(0, dy + dh * 0.45, 0, dy + dh);
+      g.addColorStop(0, 'rgba(28,42,30,0)'); g.addColorStop(1, 'rgba(28,42,30,.45)');
+      ctx.fillStyle = g; ctx.fillRect(dx, dy, dw, dh);
+    }
+    ctx.imageSmoothingEnabled = false;
+    // everything that lives on top: signs, stakes, houses, the surveyor, sparks, the survey sweep
+    this.ovl.data.fill(0);
+    this.target = this.ovl;
+    if (sweepY >= 0) for (let x = 0; x < W; x++) this.px(x, sweepY, ORANGE, 0.8);
+    for (const l of this.lots) this.drawLot(l);
+    for (const k of this.stakes) this.sprite(STAKE, k.x, k.y);
+    for (const b of this.builds) this.drawBuild(b);
+    this.drawSurveyor();
+    for (const p of this.particles) this.px(p.x, p.y, p.c);
+    this.target = this.img;
+    this.octx.putImageData(this.ovl, 0, 0);
+    ctx.drawImage(this.obuf, 0, 0, W * P, H * P);
     this.drawLabels();
   }
 
   px(x, y, c, a = 1) {
     x |= 0; y |= 0;
     if (x < 0 || y < 0 || x >= this.W || y >= this.H) return;
-    const o = (y * this.W + x) * 4, d = this.img.data;
+    const o = (y * this.W + x) * 4, d = this.target.data;
+    if (this.target === this.ovl && d[o + 3] === 0) { d[o] = c[0]; d[o + 1] = c[1]; d[o + 2] = c[2]; d[o + 3] = Math.round(a * 255); return; }
     d[o] += (c[0] - d[o]) * a; d[o + 1] += (c[1] - d[o + 1]) * a; d[o + 2] += (c[2] - d[o + 2]) * a;
+    if (this.target === this.ovl) d[o + 3] = Math.max(d[o + 3], Math.round(a * 255));
   }
   sprite(rows, x, y, colors = PAL) {
     rows.forEach((row, j) => { for (let i = 0; i < row.length; i++) if (row[i] !== '.' && colors[row[i]]) this.px(x + i, y + j, colors[row[i]]); });

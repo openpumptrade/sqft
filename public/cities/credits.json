@@ -1,0 +1,55 @@
+{
+ "usa": {
+  "title": "File:Suburbia by David Shankbone.jpg",
+  "license": "CC BY-SA 3.0",
+  "artist": "David Shankbone",
+  "page": "https://commons.wikimedia.org/wiki/File:Suburbia_by_David_Shankbone.jpg",
+  "date": "2008-03"
+ },
+ "nyc": {
+  "title": "File:One World Trade Center and New York Sunset.jpg",
+  "license": "CC0",
+  "artist": "ID 2649771",
+  "page": "https://commons.wikimedia.org/wiki/File:One_World_Trade_Center_and_New_York_Sunset.jpg",
+  "date": "2014-07-25"
+ },
+ "chicago": {
+  "title": "File:Morning view of the downtown skyline from near Morgan Point along Lakefront Trail, Chicago, 2025.jpg",
+  "license": "CC0",
+  "artist": "DimiTalen",
+  "page": "https://commons.wikimedia.org/wiki/File:Morning_view_of_the_downtown_skyline_from_near_Morgan_Point_along_Lakefront_Trail,_Chicago,_2025.jpg"
+ },
+ "losangeles": {
+  "title": "File:Griffith Observatory with Downtown Los Angeles In The Background - 54084315490.jpg",
+  "license": "CC0",
+  "artist": "The Fun Chronicles",
+  "page": "https://commons.wikimedia.org/wiki/File:Griffith_Observatory_with_Downtown_Los_Angeles_In_The_Background_-_54084315490.jpg"
+ },
+ "miami": {
+  "title": "File:Miami skyline from Biscayne Bay, Florida LCCN2011634548.tif",
+  "license": "Public domain",
+  "artist": "Carol M. Highsmith",
+  "page": "https://commons.wikimedia.org/wiki/File:Miami_skyline_from_Biscayne_Bay,_Florida_LCCN2011634548.tif"
+ },
+ "austin": {
+  "title": "File:Lady Bird Lake in Austin, Texas.jpg",
+  "license": "CC0",
+  "artist": "Rish0203",
+  "page": "https://commons.wikimedia.org/wiki/File:Lady_Bird_Lake_in_Austin,_Texas.jpg",
+  "date": "2023-10-19"
+ },
+ "washingtondc": {
+  "title": "File:United States Capitol - west front edit.jpg",
+  "license": "Public domain",
+  "artist": "Architect of the Capitol",
+  "page": "https://commons.wikimedia.org/wiki/File:United_States_Capitol_-_west_front_edit.jpg",
+  "date": "2011-12-20"
+ },
+ "sanfrancisco": {
+  "title": "File:San Francisco city skyline.jpg",
+  "license": "CC0",
+  "artist": "Lisafern",
+  "page": "https://commons.wikimedia.org/wiki/File:San_Francisco_city_skyline.jpg",
+  "date": "2018-11-26"
+ }
+}
