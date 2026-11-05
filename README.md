@@ -15,7 +15,7 @@ Nothing held by the site. A public receipt at every hop.</p>
 </p>
 
 <p align="center">
-  <img src="docs/home.jpg" width="100%" alt="SQFT home: the hero over the plat map, holdings, the loop and the lots along the bottom">
+  <img src="docs/home.jpg" width="100%" alt="SQFT home: the hero, the KPI strip and the eight market cards">
 </p>
 
 ---
@@ -45,12 +45,8 @@ The site shows all of it live: square feet held, land value at today's index, eq
 | Hold | Square feet = position size; value = size × oracle price; the oracle on `GET /v1/oracle/{market}` | `/land`, `GET /api/engine` |
 
 <p align="center">
-  <img src="docs/land.jpg" width="100%" alt="The /land page: square feet held, land value, the lots table and every receipt">
+  <img src="docs/land.jpg" width="100%" alt="The Land page: KPIs, the city markets table and the side panel">
 </p>
-
-## The side quest: survey land
-
-`/survey` is a browser pool, shown as **coming soon** and not usable yet. When it opens, your tab will hash `seed ‖ counter` on CPU (Web Workers) and GPU (WebGPU compute), looking for points whose hash starts with `grid size` zero bits. The server verifies each stake with a single hash, credits 2^grid-size points, and splits each round's SOL pot by share of verified work. Payouts are plain SOL transfers once a balance passes the threshold.
 
 ---
 
@@ -61,7 +57,7 @@ npm install
 node server.js            # http://localhost:8787
 ```
 
-Out of the box the engine is off (`ENGINE=0`) and reads the public side only: the Parcl markets, the creator vault (if `CREATOR_WALLET` is set) and the Parcl account of `ENGINE_WALLET` if one exists. The browser pool runs in test mode (pots booked, no SOL moves).
+Out of the box the engine is off (`ENGINE=0`) and reads the public side only: the Parcl markets, the creator vault (if `CREATOR_WALLET` is set) and the Parcl account of `ENGINE_WALLET` if one exists.
 
 ### Engine
 
@@ -86,10 +82,6 @@ Out of the box the engine is off (`ENGINE=0`) and reads the public side only: th
 
 The first bridge deposit of at least 5 USDC (plus the 1 USDC activation fee) lets the engine sign `CreateFundedAccount` with the owner key; from then on every cycle bridges what it has and buys land with the free collateral.
 
-### Pool
-
-`ROUND_MS`, `REWARD_SOL`, `PAYOUT_THRESHOLD_SOL`, `MIN_DIFFICULTY`, `TREASURY_SECRET` (set it to pay out for real), `DATA_FILE`.
-
 ### Hosting
 
 The frontend is static (`public/`, `vercel.json` included). The API runs anywhere Node 20 runs (`railway.json` included). Point `<meta name="sqft-api">` in `public/index.html` at the API's origin when they are hosted apart.
@@ -97,11 +89,11 @@ The frontend is static (`public/`, `vercel.json` included). The API runs anywher
 ## Layout
 
 ```
-server.js          pool server + static hosting; mounts the engine
+server.js          mounts the engine, serves /api/engine, hosts public/
 engine/engine.js   the land engine: claim → convert → bridge → buy → hold
 engine/parcl.js    Parcl V4 client: public reads, owner-key signing, the bridge deposit instruction
-public/            the site: index.html, style.css, app.js, lots.js (the city card strip), cities/ (photos), the pool modules
-tools/pixelart.py  brand art (PIL), regenerates the PNGs in public/
+public/            the site: index.html, style.css, app.js, lots.js (the market cards), cities/ (photos), art/ (illustrations)
+tools/smoke.mjs    dry-run smoke test of the engine with a throwaway key
 vendor/pumpkit     Solana / pump.fun toolkit (claims, swaps, transfers)
 ```
 

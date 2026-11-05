@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "art": "python3 tools/pixelart.py"
+    "smoke": "node tools/smoke.mjs"
   },
   "engines": {
     "node": ">=20"

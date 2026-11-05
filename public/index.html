@@ -27,7 +27,6 @@
         <a href="/" data-nav>Engine</a>
         <a href="/land" data-nav>Land</a>
         <a href="/stats" data-nav>Stats</a>
-        <a href="/ledger" data-nav>Ledger</a>
         <a href="/rules" data-nav>Rules</a>
       </nav>
       <div class="right">
@@ -96,80 +95,9 @@
       </div>
     </section>
 
-    <p class="wrap foot">Index exposure via Parcl. No physical property ownership. <a href="/survey" data-nav>Survey crew · coming soon</a></p>
+    <p class="wrap foot">Index exposure via Parcl. No physical property ownership.</p>
   </main>
 
-  <!-- ================= Survey (browser side quest) ================= -->
-  <main class="view survey" data-view="/survey" hidden>
-    <section class="wrap page-head">
-      <p class="crumb">Side quest / Survey crew <span class="soon">soon</span></p>
-      <div class="titlerow">
-        <div>
-          <h1>Survey land. <em>Get paid.</em></h1>
-          <p class="lede">Your device plants survey stakes from this tab and the round pot gets split by verified survey work. Not open yet: the allocator and the ledger run, but nothing pays out.</p>
-        </div>
-        <span class="status" id="roundLabel">round #–</span>
-      </div>
-    </section>
-    <section class="wrap">
-      <div class="control">
-        <div class="settings" id="settings" hidden>
-          <div class="panel-head"><span class="label">Crew settings</span><span class="muted small mono" id="cores"></span></div>
-          <label class="ctl"><span>CPU threads</span><input type="range" id="threads" min="1" step="1"><b id="threadsVal"></b></label>
-          <label class="ctl"><span>CPU load</span><input type="range" id="cpuDuty" min="10" max="100" step="5"><b id="cpuDutyVal"></b></label>
-          <label class="ctl switch"><span>GPU (WebGPU)</span><input type="checkbox" id="gpu"><i></i><b id="gpuState">off</b></label>
-          <label class="ctl"><span>GPU load</span><input type="range" id="gpuDuty" min="10" max="100" step="5"><b id="gpuDutyVal"></b></label>
-          <p class="muted small" id="gpuInfo"></p>
-        </div>
-        <div class="inputbar">
-          <input id="wallet" placeholder="Opens with the survey crew" disabled autocomplete="off" spellcheck="false" aria-label="Solana wallet address">
-          <button class="icon-btn" id="settingsBtn" aria-label="Crew settings" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
-          <button id="go" class="btn" disabled>Coming soon</button>
-        </div>
-        <p class="muted small consent">When it opens: address only, nothing to sign, CPU used only while surveying, paid automatically at <span class="threshold">0.01</span> SOL.</p>
-      </div>
-    </section>
-    <section class="wrap trio">
-      <div class="panel">
-        <div class="panel-head"><h2 class="h2">Field</h2><span class="tag" id="netState">live</span></div>
-        <div class="grid2">
-          <div class="stat"><span class="label">Survey rate</span><b id="poolRate">0</b><em id="poolRateUnit">pts/s</em></div>
-          <div class="stat"><span class="label">Surveyors</span><b id="miners">0</b><em>last minute</em></div>
-          <div class="stat"><span class="label">Stakes</span><b id="ppm">0</b><em>per minute</em></div>
-          <div class="stat"><span class="label">Pot</span><b id="reward">0</b><em>SOL this round</em></div>
-        </div>
-        <div class="cycle">
-          <div class="row-between"><span class="label">Round closes in</span><span class="mono strong" id="roundLeft">–</span></div>
-          <div class="seg" id="roundRuler"></div>
-          <span class="muted small" id="roundMiners">0 surveyors</span>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2 class="h2">Your crew</h2><span class="state" id="status"><i></i><b>idle</b></span></div>
-        <div class="stat big"><span class="label">Rate</span><b id="rate">0</b><em id="rateUnit">pts/s</em></div>
-        <canvas id="spark" height="56"></canvas>
-        <div class="grid2 tight">
-          <div class="stat"><span class="label">Grid size</span><b id="diff">–</b><em>bits</em></div>
-          <div class="stat"><span class="label">Stakes</span><b id="proofs">0</b><em id="rej">0 rejected</em></div>
-        </div>
-        <div class="digest"><span class="label">Last stake</span><code id="digest">waiting for a stake</code></div>
-        <ol class="ticker" id="log"></ol>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2 class="h2">Earnings</h2><span class="muted mono small" id="youAddr">no address</span></div>
-        <div class="grid3">
-          <div class="stat"><span class="label">This round</span><b id="share">0%</b><em id="est">≈ 0 SOL</em></div>
-          <div class="stat"><span class="label">Unpaid</span><b id="balance">0</b><em id="pendingNote">SOL</em></div>
-          <div class="stat"><span class="label">Paid</span><b id="paid">0</b><em>SOL total</em></div>
-        </div>
-        <div class="seg" id="thresholdRuler"></div>
-        <p class="muted small" id="thresholdText">0% of the 0.01 SOL payout threshold</p>
-        <div class="panel-head sub"><span class="label">Recent rounds</span><span class="muted small">pot, SOL</span></div>
-        <ol class="rounds" id="rounds"></ol>
-        <p class="muted small links"><a href="/leaderboard" data-nav>Crews</a> · <a href="/rounds" data-nav>Rounds</a> · <a href="/benchmark" data-nav>Benchmark</a></p>
-      </div>
-    </section>
-  </main>
 
   <!-- ================= Pages ================= -->
   <main class="view page" data-view="page" hidden>
@@ -215,127 +143,34 @@
         <p class="foot">City home-price index exposure via Parcl. No physical property ownership.</p>
       </article>
 
-      <article data-page="/leaderboard" hidden>
-        <p class="crumb">Survey crew / Crews</p>
-        <h1>Crews</h1>
-        <p class="lede">Who is surveying, and how each round's pot is shared.</p>
-        <div class="tabs" id="boardTabs">
-          <button data-board="round" class="on">This round</button>
-          <button data-board="last">Last round</button>
-          <button data-board="all">All time</button>
-        </div>
-        <div class="kpis">
-          <div class="kpi"><b id="lbRate">0</b><span id="lbRateUnit">pts/s</span></div>
-          <div class="kpi"><b id="lbMiners">0</b><span>Surveyors, last minute</span></div>
-          <div class="kpi"><b id="lbProofs">0</b><span>Stakes per minute</span></div>
-          <div class="kpi"><b id="lbRound">–</b><span id="lbLeft">–</span></div>
-        </div>
-        <div class="table-wrap"><table class="table" id="board"></table></div>
-        <p class="muted small">Share is your verified survey work in the period divided by everyone's. A stake at grid size <i>d</i> counts as 2<sup>d</sup> points.</p>
-      </article>
 
       <article data-page="/stats" hidden>
         <p class="crumb">Engine / Stats</p>
         <h1>Stats</h1>
-        <p class="lede">The land first: square feet and value over time. Then the survey crew: rate, surveyors, pots and payouts.</p>
+        <p class="lede">Square feet, position value and the index over time, plus every market the engine tracks.</p>
+        <div class="kpis">
+          <div class="kpi"><b id="stSqft">0 sqft</b><span>Square feet held</span></div>
+          <div class="kpi"><b id="stValue">$0</b><span>Position value</span></div>
+          <div class="kpi"><b id="stClaimed">0 SOL</b><span>Rewards claimed</span></div>
+          <div class="kpi"><b id="stBridged">$0</b><span>USDC bridged</span></div>
+        </div>
         <div class="charts">
           <figure class="chart-card"><figcaption><span class="label">Square feet held</span><span class="muted small">marks every 15 min</span></figcaption><div class="chart"><canvas id="chSqft"></canvas></div></figure>
           <figure class="chart-card"><figcaption><span class="label">Position value</span><span class="muted small">USD at the index</span></figcaption><div class="chart"><canvas id="chValue"></canvas></div></figure>
+          <figure class="chart-card wide"><figcaption><span class="label">USA index</span><span class="muted small">USD per square foot, as the engine saw it</span></figcaption><div class="chart"><canvas id="chIndex"></canvas></div></figure>
         </div>
-        <div class="kpis">
-          <div class="kpi"><b id="stPaid">0</b><span>SOL paid out, all time</span></div>
-          <div class="kpi"><b id="stRounds">0</b><span>Rounds settled</span></div>
-          <div class="kpi"><b id="stWallets">0</b><span>Surveyors, all time</span></div>
-          <div class="kpi"><b id="stWork">0</b><span>Points verified</span></div>
-        </div>
-        <div class="charts">
-          <figure class="chart-card"><figcaption><span class="label">Survey rate</span><span class="muted small">last 24 h</span></figcaption><div class="chart"><canvas id="chHash"></canvas></div></figure>
-          <figure class="chart-card"><figcaption><span class="label">Active surveyors</span><span class="muted small">last 24 h</span></figcaption><div class="chart"><canvas id="chMiners"></canvas></div></figure>
-          <figure class="chart-card"><figcaption><span class="label">Pot per round</span><span class="muted small">last 60 rounds, SOL</span></figcaption><div class="chart"><canvas id="chPot"></canvas></div></figure>
-          <figure class="chart-card"><figcaption><span class="label">Paid per day</span><span class="muted small">last 30 days, SOL</span></figcaption><div class="chart"><canvas id="chDays"></canvas></div></figure>
-        </div>
-        <details class="table-toggle"><summary>Daily totals as a table</summary>
-          <div class="table-wrap"><table class="table" id="daysTable"></table></div>
-        </details>
+        <h2 class="h2 section">Markets</h2>
+        <div class="table-wrap"><table class="table" id="stMarkets"></table></div>
+        <p class="foot">Index exposure via Parcl. No physical property ownership.</p>
       </article>
 
-      <article data-page="/rounds" hidden>
-        <p class="crumb">Survey crew / Rounds</p>
-        <div id="roundsList">
-          <h1>Rounds</h1>
-          <p class="lede">Every settled round. Open one to see exactly how its pot was split and paid.</p>
-          <label class="ctl switch inline"><input type="checkbox" id="roundsAll"><i></i><span>Show rounds nobody surveyed in</span></label>
-          <div class="table-wrap"><table class="table clickable" id="roundsTable"></table></div>
-          <button class="btn ghost" id="roundsMore" hidden>Load older rounds</button>
-        </div>
-        <div id="roundDetail" hidden>
-          <div class="row-between round-nav">
-            <a href="/rounds" data-nav class="back">← All rounds</a>
-            <span><a id="rdPrev" data-nav class="pill">← Older</a> <a id="rdNext" data-nav class="pill">Newer →</a></span>
-          </div>
-          <h1 id="rdTitle">Round</h1>
-          <p class="lede" id="rdWhen"></p>
-          <div class="kpis">
-            <div class="kpi"><b id="rdPot">0</b><span>SOL split</span></div>
-            <div class="kpi"><b id="rdMiners">0</b><span>Surveyors with credited work</span></div>
-            <div class="kpi"><b id="rdWork">0</b><span>Points surveyed</span></div>
-            <div class="kpi"><b id="rdPayouts">0</b><span>Payouts sent at close</span></div>
-          </div>
-          <h2 class="h2 section">How the pot was split</h2>
-          <div class="table-wrap"><table class="table" id="rdShares"></table></div>
-          <h2 class="h2 section">Payouts from this round</h2>
-          <div class="table-wrap"><table class="table" id="rdPayoutTable"></table></div>
-        </div>
-      </article>
 
-      <article data-page="/benchmark" hidden>
-        <p class="crumb">Survey crew / Benchmark</p>
-        <h1>Benchmark</h1>
-        <p class="lede">Measure this device: 5 seconds of survey work on every CPU thread, then 5 seconds on the GPU. Nothing is sent while it runs.</p>
-        <div class="bench">
-          <div class="panel bench-run">
-            <div class="row-between"><span class="label" id="bnPhase">Ready</span><span class="muted small mono" id="bnDevice"></span></div>
-            <div class="bench-rate"><b id="bnRate">0</b><em id="bnUnit">pts/s</em></div>
-            <div class="seg" id="bnProgress"></div>
-            <button class="btn" id="bnGo">Run benchmark</button>
-            <p class="muted small" id="bnNote"></p>
-          </div>
-          <div class="panel bench-result" id="bnResult" hidden>
-            <div class="grid3">
-              <div class="stat"><span class="label">CPU</span><b id="bnCpu">–</b><em id="bnCpuSub"></em></div>
-              <div class="stat"><span class="label">GPU</span><b id="bnGpu">–</b><em id="bnGpuSub"></em></div>
-              <div class="stat"><span class="label">Your earnings</span><b id="bnEarn">–</b><em id="bnEarnSub">SOL for you</em></div>
-            </div>
-            <div class="calc">
-              <span class="label">Earnings calculator</span>
-              <div class="calc-inputs">
-                <label><span>Pot</span><input type="number" id="cPot" value="10" min="0" step="any"><em>SOL</em></label>
-                <label><span>Other surveyors</span><input type="number" id="cMiners" value="10" min="0" step="1"></label>
-                <label><span>Their rate</span><input type="number" id="cRate" value="1" min="0" step="any"><em>M pts/s each</em></label>
-              </div>
-              <ol class="calc-steps" id="cSteps"></ol>
-            </div>
-            <button class="btn ghost" id="bnSave">Add to the device table</button>
-          </div>
-        </div>
-        <h2 class="h2 section">Devices tested</h2>
-        <div class="table-wrap"><table class="table" id="benchTable"></table></div>
-        <p class="muted small">Self-reported by the browser that ran the test. Shown for comparison only; it never affects credit.</p>
-      </article>
 
-      <article data-page="/ledger" hidden>
-        <p class="crumb">Survey crew / Ledger</p>
-        <h1>Ledger</h1>
-        <p class="lede">Every survey payout, with its transaction. Balances are paid at round close once they cross the threshold. The engine's own receipts live on <a href="/land" data-nav class="strong">Land</a>.</p>
-        <div class="kv" id="treasury"></div>
-        <div class="table-wrap"><table class="table" id="ledger"></table></div>
-      </article>
 
       <article data-page="/rules" hidden>
         <p class="crumb">How it works</p>
         <h1>How it works</h1>
-        <p class="lede">Two machines share this site. The <a href="/land" data-nav class="strong">engine</a> turns fees into square feet. The survey crew is a browser pool that will split SOL pots by proof of work.</p>
-        <h2 class="h2 section">The engine</h2>
+        <p class="lede">The engine turns the coin's creator rewards into square feet of city home-price indices, every cycle, with a receipt at every hop.</p>
         <div class="flow">
           <div><span>01</span><b>Claim</b><p>The engine wallet claims the coin's creator rewards from pump.fun. <code>SOL</code>, on chain.</p></div>
           <div><span>02</span><b>Convert</b><p>Everything above a gas reserve is swapped on Solana through <code>Jupiter</code> into <b>USDC</b>, the only collateral the Parcl bridge accepts. One transaction, the signature is the receipt.</p></div>
@@ -344,16 +179,6 @@
           <div><span>05</span><b>Hold</b><p>Parcl Labs publishes each index once a day (7:50 AM ET). Positions are marked to that print; the only carry is the hourly funding rate. Square feet never get sold by the engine.</p></div>
           <div><span>06</span><b>Repeat</b><p id="ldEvery">Every 10 minutes.</p></div>
         </div>
-        <h2 class="h2 section">The survey crew</h2>
-        <div class="flow">
-          <div><span>01</span><b>Ticket</b><p>Your tab asks the server for a plot bound to your address: a random 32-byte <code>seed</code> and a <code>grid size</code> in bits. Tickets last two minutes.</p></div>
-          <div><span>02</span><b>Walk the grid</b><p>Web Workers on your CPU and a WebGPU compute shader on your GPU hash <code>seed ‖ counter</code>, looking for a point whose hash starts with <code>grid size</code> zero bits.</p></div>
-          <div><span>03</span><b>Plant a stake</b><p>A hit is sent as its counter. The server checks it with a single hash. Weak, reused, expired or borrowed stakes are rejected.</p></div>
-          <div><span>04</span><b>Credit</b><p>A stake at grid size <i>d</i> is credited 2<sup>d</sup> points, the number of points it takes on average to find one.</p></div>
-          <div><span>05</span><b>Grid size</b><p>Each address gets its own grid size, tuned for about one stake every few seconds, so a phone and a workstation are measured the same way.</p></div>
-          <div><span>06</span><b>Round</b><p id="fundingRule">At round close the pot is split by share of verified survey work. Balances over the threshold are paid out and logged in the ledger.</p></div>
-        </div>
-        <p class="muted small" id="rulesConfig"></p>
         <h2 class="h2 section">Photo credits</h2>
         <p class="lede">The market cards show real photographs of each city, from Wikimedia Commons.</p>
         <ul class="credits" id="credits"></ul>
