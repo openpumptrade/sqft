@@ -122,7 +122,7 @@ h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
 .lotcard .move { position: absolute; right: 10px; bottom: 12px; font: 600 11px var(--mono); padding: 3px 7px; border-radius: 4px; background: rgba(251,248,242,.92); color: var(--ink-2); }
 .lotcard .move.up { color: var(--good); } .lotcard .move.down { color: var(--bad); }
 .lotcard footer { padding: 11px 12px 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.lotcard .price { font: 500 12.5px var(--mono); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lotcard .price { font: 500 12.5px var(--mono); color: var(--ink); overflow-wrap: anywhere; }
 .lotcard .held { display: flex; justify-content: space-between; gap: 8px; font: 400 11.5px var(--sans); color: var(--ink-3); white-space: nowrap; }
 .lotcard .held b { font-weight: 600; color: var(--ink-2); }
 .lotcard:not(.empty) .held b { color: var(--accent-2); }
@@ -305,7 +305,11 @@ h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
 }
 @media (max-width: 720px) {
   :root { --top: 56px; }
-  .top nav a { padding: 8px 7px; font-size: 13px; }
+  .top .bar { display: flex; justify-content: space-between; gap: 8px; }
+  .top nav { flex: 1; min-width: 0; justify-content: center; overflow-x: auto; scrollbar-width: none; }
+  .top .right { flex: none; gap: 8px; }
+  .lotcard .price { font-size: 12px; }
+  .top nav a { padding: 8px 7px; font-size: 13px; flex: none; }
   .pill { font-size: 12px; padding: 6px 10px; }
   h1 { font-size: 42px; }
   .lede { font-size: 15.5px; }
@@ -332,3 +336,6 @@ h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
 }
 /* ?still=1: freeze all motion (screenshots) */
 body.still *, body.still *::before, body.still *::after { animation: none !important; transition: none !important; }
+@media (max-width: 440px) {
+  .pill { display: none; }
+}

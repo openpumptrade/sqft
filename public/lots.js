@@ -68,7 +68,7 @@ export class LotStrip {
       const ch = Number(d.change_1d) || 0;
       text(mv, d.price != null ? pctFmt(ch) : '');
       cls(mv, `move ${ch > 0 ? 'up' : ch < 0 ? 'down' : ''}`);
-      text(card.querySelector('.price'), d.price != null ? `$${num(d.price, 2)} / sqft` : '–');
+      text(card.querySelector('.price'), d.price != null ? `$${num(d.price, 2)}/sqft` : '–');
       const held = Number(d.sqft) || 0, reserved = Number(d.reserved) || 0;
       text(card.querySelector('.held b'), held > 0 ? `${sqftFmt(held)} sqft · $${num(d.notional ?? held * (d.price ?? 0), 0)}` : reserved > 0 ? `${sqftFmt(reserved)} sqft under contract` : 'No position yet');
       if (card.classList.contains('empty') !== (held <= 0)) card.classList.toggle('empty', held <= 0);
