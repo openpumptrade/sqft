@@ -47,7 +47,7 @@ export class LotStrip {
             <img class="photo" alt="" decoding="async" src="/cities/${esc(key.toLowerCase())}.jpg">
             <div class="shade"></div>
             <span class="country">USA</span>
-            <b class="tag"></b>
+            <b class="tkr"></b>
             <span class="move"></span>
           </div>
           <footer>
@@ -58,7 +58,7 @@ export class LotStrip {
         this.grid.appendChild(card);
         this.cards.set(key, card);
       }
-      card.querySelector('.tag').textContent = d.label ?? LABEL[key] ?? key;
+      card.querySelector('.tkr').textContent = d.label ?? LABEL[key] ?? key;
       card.querySelector('.photo').alt = d.city ?? CITY[key] ?? key;
       card.title = d.city ?? CITY[key] ?? key;
       const mv = card.querySelector('.move');
@@ -79,7 +79,7 @@ export class LotStrip {
   }
 
   allocate({ sqft = 0, label = null } = {}) {
-    const card = [...this.cards.values()].find(c => c.querySelector('.tag').textContent === label || c.dataset.key === label) ?? [...this.cards.values()][0];
+    const card = [...this.cards.values()].find(c => c.querySelector('.tkr').textContent === label || c.dataset.key === label) ?? [...this.cards.values()][0];
     if (!card) return;
     this.pulse(card);
     if (sqft) {
