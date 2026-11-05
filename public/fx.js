@@ -34,7 +34,7 @@ const scrambling = new WeakMap();
 export function scramble(el, text = el.dataset.text ?? el.textContent, ms = 520) {
   if (!el) return;
   el.dataset.text = text;
-  if (REDUCED) { el.textContent = text; return; }
+  if (REDUCED || document.body.classList.contains('still')) { el.textContent = text; return; }
   cancelAnimationFrame(scrambling.get(el));
   const start = performance.now();
   const step = now => {

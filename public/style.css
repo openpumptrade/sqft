@@ -89,7 +89,7 @@ body.backdrop .land { filter: saturate(.75) brightness(.96); }
 @keyframes lot-flash { 0% { opacity: .55; } 100% { opacity: 0; } }
 .lotcard .floater { left: auto; right: 10px; top: 36px; color: #fff; font-size: 13px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
 .lotcard { container-type: inline-size; }
-@container (max-width: 200px) { .lotcard .held small, .lotcard .trend { display: none; } .lotcard .held b { font-size: 11px; } }
+@container (max-width: 200px) { .lotcard .held small, .lotcard .trend { display: none; } .lotcard .held b { font-size: 11px; } .lotcard.empty .held { display: none; } }
 @container (max-width: 140px) { .lotcard .city { display: none; } .lotcard .price b { font-size: 16px; } }
 .land.sweep::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(228,87,27,.35), transparent) 0 0 / 30% 100% no-repeat; animation: sweep 1.2s var(--ease); }
 body.backdrop::before { content: ''; position: fixed; inset: 0; z-index: 4; background: rgba(239, 230, 210, .42); pointer-events: none; }
@@ -545,3 +545,6 @@ h2.section { font: 600 22px var(--serif); letter-spacing: -.01em; margin: 26px 0
 .credits li:last-child { border-bottom: 0; }
 .credits li b { color: var(--ink); }
 .credits a { color: var(--accent-2); }
+
+/* ?still=1: freeze all motion (screenshots) */
+body.still *, body.still *::before, body.still *::after { animation: none !important; transition: none !important; }

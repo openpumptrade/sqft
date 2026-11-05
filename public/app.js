@@ -21,6 +21,7 @@ let earned = null;     // balance + pending + paid at the last poll, to spot new
 const R = (id, v) => roll($(id), v);
 
 ripples('.go, .icon-btn, .tabs button');
+if (new URLSearchParams(location.search).has('still')) document.body.classList.add('still');   // ?still=1: no motion, for screenshots
 
 const scene = new LotStrip($('pit'));
 globalThis.__lots = scene;   // for debugging from the console
@@ -288,6 +289,7 @@ async function loadLand() {
   let d;
   try { d = await getJson('/api/engine'); } catch { return; }
   const { config: c, live: l, totals: t, ledger: L, land: Ld } = d;
+  feedStrip(Ld);
   const row = (k, v) => `<div><span>${k}</span><b>${v}</b></div>`;
   R('ldSqft', sqft(Ld.sqft)); setText('ldSqftSub', `across ${Ld.cities} ${Ld.cities === 1 ? 'city' : 'cities'}${Ld.reserved_sqft > 0 ? ` · ${sqft(Ld.reserved_sqft)} sqft under contract` : ''}`);
   R('ldValue', usd(Ld.notional)); setText('ldValueSub', `at today's index · ${usd(Ld.equity)} equity on Parcl`);
