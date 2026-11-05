@@ -68,7 +68,7 @@ Out of the box the engine is off (`ENGINE=0`) and reads the public side only: th
 | `PRIVATE_KEY` | | engine wallet secret (base58 or JSON array). This key is also the Parcl owner key |
 | `ENGINE_WALLET` | | public key of the engine wallet, for read-only mode |
 | `CREATOR_WALLET` | | public key whose pump.fun vault is shown before the engine is armed |
-| `TOKEN_MINT` | | the coin; with a fee-sharing config the engine distributes the shared vault first |
+| `TOKEN_MINT` | | the coin (live: `5iXqh58nDqz9cTjb26WirVbTARsszRbhFKLPG8CSpump`); with a fee-sharing config the engine distributes the shared vault first |
 | `ENGINE_EVERY_MS` | `600000` | cycle length |
 | `ENGINE_KEEP_SOL` | `0.02` | gas reserve kept in the wallet |
 | `PARCL_ENV` | `mainnet` | `mainnet` or `devnet` |

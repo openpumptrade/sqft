@@ -83,11 +83,12 @@ async function engineState(maxAge = 10_000) {
     $('conn').className = 'conn down'; $('conn').title = 'api unreachable';
     throw new Error('api');
   }
-  renderCA(engineData.config.token_mint);
+  renderCA(engineData.config.token_mint || META_CA);
   return engineData;
 }
 
-// Contract address: a placeholder until TOKEN_MINT is set on the server.
+// Contract address: TOKEN_MINT from the server, else <meta name="sqft-ca">, else a placeholder.
+const META_CA = document.querySelector('meta[name="sqft-ca"]')?.content?.trim() || '';
 let shownMint;
 function renderCA(mint) {
   if (mint === shownMint) return;
