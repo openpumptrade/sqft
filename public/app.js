@@ -1,4 +1,4 @@
-// UI: routing, controls, live pool stream, wallet polling, the engine home and the land map.
+// UI: routing, controls, live pool stream, wallet polling, the engine home and the land page.
 import { deviceLabel, runBench } from './bench.js';
 import { barChart, lineChart } from './charts.js';
 import { API } from './config.js';
@@ -23,7 +23,7 @@ const R = (id, v) => roll($(id), v);
 ripples('.go, .icon-btn, .tabs button');
 if (new URLSearchParams(location.search).has('still')) document.body.classList.add('still');   // ?still=1: no motion, for screenshots
 
-const scene = new LotStrip($('pit'));
+const scene = new LotStrip($('lotWrap'));
 globalThis.__lots = scene;   // for debugging from the console
 
 // ---------- formatting ----------
@@ -65,62 +65,33 @@ function segments(el, fraction, n = 24) {
 }
 
 // ---------- routing ----------
-// On the engine and survey views the map is the stage; other pages open as a drawer over it.
 function route() {
   const roundId = location.pathname.match(/^\/rounds\/(\d+)$/)?.[1];
   const path = roundId ? '/rounds' : PAGES.includes(location.pathname) ? location.pathname : '/';
-  const stage = path === '/' || path === '/survey';
-  document.querySelector('[data-view="/"]').hidden = path !== '/';
-  document.querySelector('[data-view="/survey"]').hidden = path !== '/survey';
-  document.querySelector('[data-view="page"]').hidden = stage;
-  document.body.classList.toggle('backdrop', !stage);
-  scene.setBackdrop(!stage);
-  for (const a of document.querySelectorAll('.dock a')) a.classList.toggle('on', a.getAttribute('href') === path);
-  if (!stage) {
-    for (const s of document.querySelectorAll('[data-page]')) s.hidden = s.dataset.page !== path;
-    document.querySelector('.view.page').scrollTop = 0;
+  const kind = path === '/' ? '/' : path === '/survey' ? '/survey' : 'page';
+  for (const v of document.querySelectorAll('.view')) v.hidden = v.dataset.view !== kind;
+  const navFor = { '/leaderboard': '/survey', '/rounds': '/survey', '/benchmark': '/survey' }[path] ?? path;
+  for (const a of document.querySelectorAll('.top nav a')) a.classList.toggle('on', a.getAttribute('href') === navFor);
+  if (kind === 'page') {
+    for (const el of document.querySelectorAll('[data-page]')) el.hidden = el.dataset.page !== path;
     renderPool();
   }
+  scrollTo(0, 0);
   if (path === '/') loadHome();
   if (path === '/survey') loadStrip();
   if (path === '/stats') loadStats();
   if (path === '/rounds') roundId ? loadRound(Number(roundId)) : loadRounds();
   if (path === '/benchmark') loadBench();
   if (path === '/land') loadLand();
+  if (path === '/rules') loadCredits();
   closeSettings();
-  enter(document.querySelector(path === '/' ? '[data-view="/"]' : path === '/survey' ? '[data-view="/survey"]' : '[data-view="page"]'));
-  requestAnimationFrame(placeMap);
+  enter(document.querySelector(`[data-view="${kind}"]`));
 }
-
-// The map is a framed panel that sits between the hero's controls and the deeds (document coordinates, so it scrolls with the page).
-const mapEl = $('pit');
-function placeMap() {
-  const view = document.querySelector('.view.stage:not([hidden])');
-  let top, bottom;
-  if (view) {
-    const ctl = view.querySelector('.control'), cards = ['.net', '.rig', '.earn'].map(c => view.querySelector(c)).filter(Boolean);
-    top = ctl.getBoundingClientRect().bottom + scrollY + 12;
-    bottom = Math.min(...cards.map(c => c.getBoundingClientRect().top)) + scrollY - 12;
-  } else if (!mapEl.dataset.placed) { top = scrollY + innerHeight * 0.4; bottom = scrollY + innerHeight * 0.74; }
-  else return;
-  if (bottom - top < 100) bottom = top + 100;
-  const pad = innerWidth < 720 ? 12 : 20, width = document.documentElement.clientWidth - pad * 2;
-  const next = `${Math.round(top)}|${Math.round(bottom)}|${width}`;
-  if (mapEl.dataset.rect === next) return;
-  mapEl.dataset.rect = next;
-  Object.assign(mapEl.style, { top: `${Math.round(top)}px`, left: `${pad}px`, width: `${width}px`, height: `${Math.round(bottom - top)}px` });
-  mapEl.dataset.placed = '1';
-}
-addEventListener('resize', placeMap);
-setInterval(placeMap, 1500);
 
 // Staggered entrance for the visible view, and scramble its static labels.
 function enter(view) {
   pulse(view, 'enter');
-  for (const el of view.querySelectorAll('.card-head .label, .sheet article:not([hidden]) h1')) {
-    if (el.closest('[hidden]')) continue;
-    scramble(el, el.dataset.text ?? el.textContent, el.tagName === 'H1' ? 700 : 480);
-  }
+  for (const el of view.querySelectorAll('article:not([hidden]) h1')) if (!el.querySelector('*')) scramble(el, el.dataset.text ?? el.textContent, 700);
 }
 function go(path) {
   history.pushState(null, '', path);
@@ -144,6 +115,18 @@ const until = t => { const s = Math.max(0, Math.round((t - Date.now()) / 1000));
 const solLink = sig => `<a href="https://solscan.io/tx/${esc(sig)}" target="_blank" rel="noopener">${esc(sig.slice(0, 10))}…</a>`;
 const ext = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener">${text}</a>`;
 const acct = a => ext(`https://solscan.io/account/${a}`, esc(a));
+
+// photo credits on the rules page, from the same file the cards use
+let creditsLoaded = false;
+async function loadCredits() {
+  if (creditsLoaded) return;
+  try {
+    const c = await (await fetch('/cities/credits.json')).json();
+    const names = { usa: 'USA', nyc: 'New York City', chicago: 'Chicago', losangeles: 'Los Angeles', miami: 'Miami', austin: 'Austin', washingtondc: 'Washington, DC', sanfrancisco: 'San Francisco' };
+    $('credits').innerHTML = Object.entries(c).map(([k, v]) => `<li><b>${esc(names[k] ?? k)}</b> · ${ext(v.page, esc(v.title.replace('File:', '')))} · ${esc(v.artist || 'unknown')} · ${esc(v.license)}</li>`).join('');
+    creditsLoaded = true;
+  } catch {}
+}
 
 // ---------- stats ----------
 let statsTimer = null;
@@ -282,7 +265,7 @@ function calc(liveRate = null, measuring = false) {
 
 // ---------- the land page ----------
 let landTimer = null;
-function lotName(x) { return esc(x.city ?? x.name ?? ''); }
+const thumb = x => `<img class="thumb" src="/cities/${esc(String(x.name).toLowerCase())}.jpg" alt="" loading="lazy">`;
 async function loadLand() {
   clearTimeout(landTimer);
   if (location.pathname !== '/land') return;
@@ -291,24 +274,34 @@ async function loadLand() {
   const { config: c, live: l, totals: t, ledger: L, land: Ld } = d;
   feedStrip(Ld);
   const row = (k, v) => `<div><span>${k}</span><b>${v}</b></div>`;
-  R('ldSqft', sqft(Ld.sqft)); setText('ldSqftSub', `across ${Ld.cities} ${Ld.cities === 1 ? 'city' : 'cities'}${Ld.reserved_sqft > 0 ? ` · ${sqft(Ld.reserved_sqft)} sqft under contract` : ''}`);
-  R('ldValue', usd(Ld.notional)); setText('ldValueSub', `at today's index · ${usd(Ld.equity)} equity on Parcl`);
-  R('ldPnl', (Ld.upnl < 0 ? '−' : '') + usd(Math.abs(Ld.upnl)).replace('−', '')); setText('ldPnlSub', Ld.notional ? `${pctS(Ld.upnl / Math.max(1e-9, Ld.notional - Ld.upnl))} since entry` : 'since entry');
-  R('ldUsd', usd(t.bridged_usdc)); setText('ldUsdSub', `bridged to Parcl · ${sol(t.claimed_lamports)} SOL claimed`);
-  setText('ldEvery', `Every ${Math.round(c.every_ms / 60000)} minutes. Target book: ${c.targets.map(x => `${x.label} ${Math.round(x.weight * 100)}%`).join(', ')}. Orders go to the lot furthest under its weight first; a deposit needs ${c.min_bridge_usdc} USDC, an order ${c.min_order_usd} USD. Leverage ${c.leverage}x${c.leverage === 1 ? ': notional equals collateral, nothing borrowed' : ''}.`);
+  const holding = Ld.sqft > 0;
+  setText('ldSqft', `${sqft(Ld.sqft)} sqft`);
+  setText('ldValue', usd(Ld.notional));
+  setText('ldColl', usd(Ld.collateral ?? 0));
+  setText('ldMarkets', String((Ld.lots ?? []).length || 8));
+  const st = $('ldStatus');
+  st.innerHTML = holding ? `<b>Live</b> · ${Ld.cities} ${Ld.cities === 1 ? 'city' : 'cities'} · ${signed(Ld.upnl)} unrealized` : c.writes ? `<b>Armed${c.dry ? ' · dry run' : ''}</b> · No positions yet` : `<b>Pre-launch</b> · No positions yet`;
+  st.classList.toggle('live', holding);
+  const m0 = (Ld.lots ?? [])[0];
+  setText('ldOracle', m0?.valid_until ? `Parcl Labs index · daily · next print in ${until(m0.valid_until)}` : 'Parcl Labs index · daily');
+  setText('ldSideTitle', holding ? 'A footprint, marked daily.' : 'A footprint starts with the first cycle.');
+  setText('ldSideText', holding
+    ? `${sqft(Ld.sqft)} square feet across ${Ld.cities} ${Ld.cities === 1 ? 'city' : 'cities'}, worth ${usd(Ld.notional)} at today's index. Every position is long at ${c.leverage}x and marked once a day at the Parcl Labs print; the engine only ever buys.`
+    : `No positions yet. When the engine runs a cycle, rewards are converted to USDC, bridged to Parcl, and the first city index positions open here${Ld.on_the_way_usd > 0 ? ` (${usd(Ld.on_the_way_usd)} already on the way)` : ''}.`);
+  const lots = Ld.lots ?? [];
+  $('ldLots').innerHTML = '<tr><th colspan="2">Market</th><th>Ticker</th><th class="num">Index price</th><th class="num">Today</th><th>30d</th><th class="num">Exposure</th></tr>' +
+    (lots.map((x, i) => `<tr style="animation-delay:${i * 15}ms"><td style="width:76px">${thumb(x)}</td><td class="name">${esc(x.city)}${x.oracle_status !== 'Active' ? ` <span class="st">${esc(x.oracle_status)}</span>` : ''}</td><td><span class="ticker ${x.target ? '' : 'off'}">${esc(x.label)}</span></td><td class="num">$${num(x.price, 2)}</td><td class="num ${x.change_1d > 0 ? 'up' : x.change_1d < 0 ? 'down' : ''}">${pctS(x.change_1d)}</td><td><canvas class="spark" data-spark="${x.spark.join(',')}" width="144" height="40"></canvas></td><td class="num">${sqft(x.sqft)} sqft${x.sqft ? `<br><span class="muted">${usd(x.notional)} · ${signed(x.upnl)}</span>` : ''}</td></tr>`).join('')
+      || '<tr><td colspan="7" class="empty">Reading the markets…</td></tr>');
+  drawSparks($('ldLots'));
   const A = l.account;
   $('ldLinks').innerHTML =
     row('Engine wallet · Parcl owner key', c.wallet ? `${acct(c.wallet)}${c.owner_hex ? `<br><span class="muted">0x${esc(c.owner_hex)}</span>` : ''}` : '<span class="muted">not armed yet</span>') +
     row('Parcl account', A ? `#${A.id} · ${ext(c.account_url, 'read it on the validator ↗')} · ${esc(A.mode)} margin${A.pending ? ' · pending activation' : ''}` : c.wallet ? '<span class="muted">none yet: created from the first bridge deposit (≥ 5 USDC + 1 USDC activation)</span>' : '<span class="muted">–</span>') +
-    row('Collateral', A ? `${usd(A.collateral)} USDC · ${usd(A.available)} free · ${usd(Ld.upnl)} unrealized` : '<span class="muted">–</span>') +
+    row('Collateral', A ? `${usd(A.collateral)} USDC · ${usd(A.available)} free · ${signed(Ld.upnl)} unrealized` : '<span class="muted">–</span>') +
     row('On the way', `${usd(l.wallet_usdc ?? 0)} USDC in the wallet · ${usd(l.bridge?.unclaimed_usdc ?? 0)} unclaimed on the bridge${l.bridge?.deposits_halted ? ' · <span class="muted">deposits halted</span>' : ''}`) +
     row('Bridge program (Solana)', c.bridge_program ? acct(c.bridge_program) : '<span class="muted">–</span>') +
+    row('Target book', c.targets.map(x => `${esc(x.label)} ${Math.round(x.weight * 100)}%`).join(' · ') + ` · ${c.leverage}x · every ${Math.round(c.every_ms / 60000)} min`) +
     row('Chain', `${esc(c.chain)} · ${ext(c.validator + '/v1/markets', 'markets ↗')} · ${ext(c.app, 'trading app ↗')}`);
-  const lots = Ld.lots ?? [];
-  $('ldLots').innerHTML = '<tr><th>Lot</th><th class="num">Index, $/sqft</th><th class="num">1d</th><th class="num">30d</th><th>Trend</th><th class="num">Weight</th><th class="num">Held, sqft</th><th class="num">Value</th><th class="num">PnL</th><th class="num">Funding /h</th></tr>' +
-    (lots.map((x, i) => `<tr style="animation-delay:${i * 15}ms"><td><span class="lot ${x.target ? '' : 'off'}">${esc(x.label)}</span>${lotName(x)}${x.oracle_status !== 'Active' ? ` <span class="st">${esc(x.oracle_status)}</span>` : ''}</td><td class="num">${num(x.price, 2)}</td><td class="num ${x.change_1d > 0 ? 'up' : x.change_1d < 0 ? 'down' : ''}">${pctS(x.change_1d)}</td><td class="num ${x.change_30d > 0 ? 'up' : x.change_30d < 0 ? 'down' : ''}">${pctS(x.change_30d)}</td><td><canvas class="spark" data-spark="${x.spark.join(',')}" width="144" height="40"></canvas></td><td class="num">${Math.round(x.weight * 100)}%</td><td class="num">${sqft(x.sqft)}</td><td class="num">${usd(x.notional)}</td><td class="num ${x.upnl > 0 ? 'up' : x.upnl < 0 ? 'down' : ''}">${x.sqft ? signed(x.upnl) : '–'}</td><td class="num">${(x.funding_hourly * 100).toFixed(4)}%</td></tr>`).join('')
-      || '<tr><td colspan="10" class="empty">Reading the markets…</td></tr>');
-  drawSparks($('ldLots'));
   const items = [
     ...L.claims.map(x => ({ at: x.at, step: 'claim', what: `${sol(x.lamports)} SOL from the creator vault`, link: solLink(x.sig) })),
     ...L.swaps.map(x => ({ at: x.at, step: 'convert', what: `${sol(x.lamports)} SOL → ${usd(x.usdc)} USDC`, link: solLink(x.sig) })),
@@ -322,6 +315,7 @@ async function loadLand() {
   setText('ldNote', c.writes
     ? `Armed${c.dry ? ' · dry run (logs only, nothing moves)' : ''}. The Parcl account is owned by the engine wallet's key; its positions are public on the validator, nothing is held by this site.`
     : `Not armed: the server has no engine key, so only the public side (vault, indices${A ? ', the Parcl account' : ''}) is live.`);
+  setText('ldEvery', `Every ${Math.round(c.every_ms / 60000)} minutes. Target book: ${c.targets.map(x => `${x.label} ${Math.round(x.weight * 100)}%`).join(', ')}. Orders go to the market furthest under its weight first; a deposit needs ${c.min_bridge_usdc} USDC, an order ${c.min_order_usd} USD.`);
   landTimer = setTimeout(loadLand, 20_000);
 }
 function drawSparks(root) {
@@ -333,11 +327,11 @@ function drawSparks(root) {
     const min = Math.min(...v), max = Math.max(...v), span = max - min || 1;
     ctx.beginPath();
     v.forEach((p, i) => { const x = (i / (v.length - 1)) * (w - 4) + 2, y = h - 4 - ((p - min) / span) * (h - 8); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
-    ctx.strokeStyle = v.at(-1) >= v[0] ? '#2f7d3a' : '#b8321f'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.stroke();
+    ctx.strokeStyle = v.at(-1) >= v[0] ? '#2e7d4a' : '#c0392b'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.stroke();
   }
 }
 
-// ---------- the lot strip (home and survey) ----------
+// ---------- the market cards (home and survey) ----------
 function feedStrip(Ld) {
   scene.setLots((Ld.lots ?? []).map(x => ({ key: x.name, label: x.label, city: x.city, price: x.price, change_1d: x.change_1d, change_30d: x.change_30d, spark: x.spark, sqft: x.sqft, notional: x.notional, reserved: (Ld.reserved ?? []).find(r => r.name === x.name)?.sqft ?? 0 })));
 }
@@ -363,51 +357,36 @@ function renderHome() {
   const { config: c, live: l, totals: t, ledger: L, flow: f, land: Ld } = d;
   const now = Date.now();
   const holding = Ld.sqft > 0;
-  R('hmSqft', sqft(Ld.sqft));
-  setText('hmSqftSub', holding ? `across ${Ld.cities} ${Ld.cities === 1 ? 'city' : 'cities'}${Ld.reserved_sqft > 0 ? ` · ${sqft(Ld.reserved_sqft)} under contract` : ''}` : Ld.reserved_sqft > 0 ? `${sqft(Ld.reserved_sqft)} sqft under contract` : 'no lots yet');
-  R('hmValue', usd(Ld.notional));
-  setText('hmValueSub', holding ? `at today's index · ${signed(Ld.upnl)} unrealized` : Ld.index ? `USA index $${num(Ld.index, 2)}/sqft` : "at today's index");
-  R('hmEquity', usd(Ld.equity));
-  setText('hmEquitySub', l.account ? `USDC collateral + PnL · ${usd(l.account.available)} free` : Ld.on_the_way_usd > 0 ? `${usd(Ld.on_the_way_usd)} on the way to Parcl` : 'USDC collateral + PnL');
-  R('hmSol', sol(t.claimed_lamports));
-  setText('hmSolSub', `SOL claimed · ${usd(t.bridged_usdc)} bridged`);
-  $('hmState').textContent = f.armed ? (c.dry ? 'dry run' : 'live') : holding ? 'live' : 'standby';
-  $('hmState').style.color = (f.armed && !c.dry) || holding ? '' : 'var(--accent)';
+  setText('kpSqft', `${sqft(Ld.sqft)} sqft`);
+  setText('kpValue', usd(Ld.notional));
+  setText('kpColl', usd(Ld.collateral ?? 0));
+  setText('kpStatus', holding ? 'Holding' : f.armed ? (c.dry ? 'Dry run' : 'Armed') : 'Standby');
   if (f.next_run) { setText('hmLeft', until(f.next_run)); segments($('hmRuler'), 1 - Math.max(0, f.next_run - now) / f.cycle_ms); }
   else { setText('hmLeft', `every ${Math.round(f.cycle_ms / 60000)} min`); segments($('hmRuler'), 0); }
   const vault = l.vault;
-  setText('hmVault', vault ? `vault: ${vault.claimable_sol.toFixed(4)} SOL claimable${f.oracle_valid_until ? ` · index valid ${until(f.oracle_valid_until)}` : ''}` : c.creator ? 'vault: reading…' : 'vault: creator wallet not set');
-  // the loop
+  setText('hmVault', vault ? `Creator vault: ${vault.claimable_sol.toFixed(4)} SOL claimable · ${sol(t.claimed_lamports)} SOL claimed so far · ${usd(t.bridged_usdc)} bridged` : c.creator ? 'Creator vault: reading…' : 'Creator vault: wallet not set');
+  // the four steps
   const swaps = L.swaps ?? [], claims = L.claims ?? [], bridges = L.bridges ?? [], orders = (L.orders ?? []).filter(o => o.kind === 'buy');
   const lastSwap = swaps[0], lastClaim = claims[0], lastBridge = bridges[0], lastBuy = orders[0];
-  const step = (n, name, what, state, cls) => `<li class="${cls}"><b>${n}</b><span>${name}<small>${what}</small></span><em>${state}</em></li>`;
-  const ready = vault && vault.claimable_sol >= 0.01;
   const A = l.account;
-  $('hmLoop').innerHTML =
-    step('01', 'Claim creator rewards', lastClaim ? `${sol(lastClaim.lamports)} SOL · ${ago(lastClaim.at)}` : vault ? `${vault.claimable_sol.toFixed(4)} SOL waiting in the vault` : 'pump.fun creator vault → engine wallet', ready ? 'ready' : lastClaim ? 'done' : 'waiting', ready ? 'wait' : lastClaim ? 'on' : '') +
-    step('02', 'Convert to USDC', lastSwap ? `${sol(lastSwap.lamports)} SOL → ${usd(lastSwap.usdc)} · ${ago(lastSwap.at)}` : 'everything above the gas reserve, through Jupiter', lastSwap ? 'done' : 'waiting', lastSwap ? 'on' : '') +
-    step('03', 'Bridge to Parcl', lastBridge ? `${usd(lastBridge.usdc)} USDC · ${ago(lastBridge.at)}` : (l.wallet_usdc ?? 0) > 0 ? `${usd(l.wallet_usdc)} USDC in the wallet, minimum ${c.min_bridge_usdc} per deposit` : 'USDC → the bridge program, credited to this key', lastBridge ? 'done' : (l.wallet_usdc ?? 0) >= c.min_bridge_usdc ? 'ready' : 'waiting', lastBridge ? 'on' : (l.wallet_usdc ?? 0) >= c.min_bridge_usdc ? 'wait' : '') +
-    step('04', 'Buy land', lastBuy ? `${sqft(lastBuy.sqft)} sqft of ${esc(lastBuy.name)} · ${usd(lastBuy.usd)} · ${ago(lastBuy.at)}` : A ? `${usd(A.available)} USDC free on account #${A.id}` : `long ${c.targets.length} city indices at ${c.leverage}x, IOC market orders`, lastBuy ? 'done' : A && A.available >= c.min_order_usd ? 'ready' : 'waiting', lastBuy ? 'on' : A && A.available >= c.min_order_usd ? 'wait' : '') +
-    step('05', 'Hold', holding ? `${sqft(Ld.sqft)} sqft · ${usd(Ld.notional)} marked daily by the Parcl Labs index` : 'positions marked once a day at 7:50 AM ET', holding ? 'holding' : 'idle', holding ? 'on' : '');
+  const ready = vault && vault.claimable_sol >= 0.01;
+  const step = (name, text, cls) => { const li = document.querySelector(`#hmSteps li[data-step="${name}"]`); li.className = cls; li.querySelector('small').textContent = text; };
+  step('claim', lastClaim ? `${sol(lastClaim.lamports)} SOL · ${ago(lastClaim.at)}` : vault ? `${vault.claimable_sol.toFixed(4)} SOL waiting` : '', ready ? 'wait' : lastClaim ? 'on' : '');
+  step('convert', lastSwap ? `${usd(lastSwap.usdc)} · ${ago(lastSwap.at)}` : '', lastSwap ? 'on' : '');
+  step('bridge', lastBridge ? `${usd(lastBridge.usdc)} · ${ago(lastBridge.at)}` : (l.wallet_usdc ?? 0) > 0 ? `${usd(l.wallet_usdc)} waiting` : '', lastBridge ? 'on' : (l.wallet_usdc ?? 0) >= c.min_bridge_usdc ? 'wait' : '');
+  step('buy', lastBuy ? `${sqft(lastBuy.sqft)} sqft ${esc(lastBuy.label ?? lastBuy.name)} · ${ago(lastBuy.at)}` : A ? `${usd(A.available)} free` : '', lastBuy ? 'on' : A && A.available >= c.min_order_usd ? 'wait' : '');
   $('hmLoopState').className = `state ${holding ? 'mining' : ''}`;
   $('hmLoopState').querySelector('b').textContent = holding ? 'holding' : f.armed ? 'armed' : 'standby';
-  // lots
-  const lots = (Ld.lots ?? []).filter(x => x.target || x.sqft > 0);
-  $('hmLots').innerHTML = lots.map(x => `<li class="${x.sqft > 0 ? '' : 'empty'}"><span>${esc(x.label)}</span><em>${sqft(x.sqft)} sqft<small>$${num(x.price, 0)}/sqft</small></em><b class="${x.change_1d > 0 ? 'up' : x.change_1d < 0 ? 'down' : ''}">${pctS(x.change_1d)}</b></li>`).join('')
-    || '<li class="empty"><span>–</span><em>reading the markets…</em><b></b></li>';
-  // receipts
+  // activity
   const items = [
-    ...claims.map(x => ({ at: x.at, k: 'claim', what: `${sol(x.lamports)} SOL`, link: ext(`https://solscan.io/tx/${x.sig}`, 'solscan ↗') })),
-    ...swaps.map(x => ({ at: x.at, k: 'convert', what: `${sol(x.lamports)} SOL → ${usd(x.usdc)}`, link: ext(`https://solscan.io/tx/${x.sig}`, 'solscan ↗') })),
+    ...claims.map(x => ({ at: x.at, k: 'claim', what: `${sol(x.lamports)} SOL from the creator vault`, link: ext(`https://solscan.io/tx/${x.sig}`, 'solscan ↗') })),
+    ...swaps.map(x => ({ at: x.at, k: 'convert', what: `${sol(x.lamports)} SOL → ${usd(x.usdc)} USDC`, link: ext(`https://solscan.io/tx/${x.sig}`, 'solscan ↗') })),
     ...bridges.map(x => ({ at: x.at, k: 'bridge', what: `${usd(x.usdc)} USDC → Parcl`, link: ext(`https://solscan.io/tx/${x.sig}`, 'solscan ↗') })),
-    ...orders.map(x => ({ at: x.at, k: 'buy', what: `${sqft(x.sqft)} sqft ${esc(x.label ?? x.name)} · ${usd(x.usd)}`, link: `<span class="mono">${esc(String(x.hash ?? '')).slice(0, 10)}</span>` })),
-  ].sort((a, b) => b.at - a.at).slice(0, 5);
-  $('hmReceipts').innerHTML = items.map(x => `<li><span>${esc(x.k)}</span><em>${x.what}</em><b>${x.link}</b></li>`).join('') || '<li class="empty">No receipts yet. The first claim starts the loop.</li>';
+    ...orders.map(x => ({ at: x.at, k: 'buy', what: `${sqft(x.sqft)} sqft ${esc(x.city ?? x.name)} · ${usd(x.usd)}`, link: `<span class="mono">${esc(String(x.hash ?? '')).slice(0, 10)}</span>` })),
+  ].sort((a, b) => b.at - a.at).slice(0, 7);
+  $('hmActivity').innerHTML = items.map(x => `<li><span>${esc(x.k)}</span><em>${x.what}</em><b>${x.link} · ${ago(x.at)}</b></li>`).join('')
+    || '<li class="empty"><svg viewBox="0 0 24 24"><path d="M12 3 3 7.5l9 4.5 9-4.5zM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg>Waiting for the first cycle.</li>';
   $('hmAccount').innerHTML = A ? ext(c.account_url, `parcl account #${A.id} ↗`) : c.wallet ? `owner ${ext(`https://solscan.io/account/${c.wallet}`, `${c.wallet.slice(0, 4)}…${c.wallet.slice(-4)} ↗`)}` : 'parcl account –';
-  // caption + the map follows the book
-  setText('figCap', `${sqft(Ld.sqft)} sqft`);
-  setText('figSlots', holding ? `${Ld.cities} ${Ld.cities === 1 ? 'lot' : 'lots'} · ${usd(Ld.notional)}` : Ld.reserved_sqft > 0 ? `${sqft(Ld.reserved_sqft)} sqft under contract` : 'no lots yet');
-  setText('figIndex', Ld.index ? `USA index $${num(Ld.index, 2)}/sqft` : 'USA index –');
   feedStrip(Ld);
   // a new buy since the last render lights its card
   const newest = orders[0]?.at ?? 0;

@@ -4,205 +4,219 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SQFT · $SQFT</title>
-  <meta name="description" content="SQFT ($SQFT): fees become square feet. Every creator reward this coin earns is claimed, converted to USDC, bridged to Parcl and spent on long positions in city home-price indices. Measured in square feet, marked daily, for as long as the coin trades.">
+  <meta name="description" content="SQFT ($SQFT): fees become square feet. Creator rewards converted into exposure to city home-price indices on Parcl, measured in square feet, marked daily, for as long as the coin trades.">
   <meta name="sqft-api" content="https://sqft-production.up.railway.app">
   <meta property="og:title" content="SQFT · $SQFT · fees become square feet">
   <meta property="og:description" content="A pump.fun coin whose creator rewards buy exposure to the housing market on Solana, through Parcl. Square feet held, city by city, live.">
-  <meta property="og:image" content="https://www.sqft.fun/logo.png">
+  <meta property="og:image" content="https://sqftfun.vercel.app/logo.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://www.sqft.fun/logo.png">
+  <meta name="twitter:image" content="https://sqftfun.vercel.app/logo.png">
   <link rel="icon" href="/icon.png" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="/style.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
-  <section id="pit" class="land" aria-label="The eight lots: one card per city index with its photo, index price, today's move and the square feet held"><div class="lotgrid" id="lotGrid"></div></section>
-
   <header class="top">
-    <a class="logo" href="/" data-nav aria-label="SQFT"><img src="/logo-small.png" alt=""><b>SQFT</b><small>$SQFT</small></a>
-    <p class="fig" aria-hidden="true"><b id="figCap">0 sqft</b><i></i><span id="figSlots">no lots yet</span><i></i><span id="figIndex">USA index –</span></p>
-    <a class="social" href="https://x.com/sqftfun" target="_blank" rel="noopener" aria-label="SQFT on X">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      <span>@sqftfun</span>
-    </a>
-    <span class="conn" id="conn" title="connecting"><i></i></span>
+    <div class="wrap bar">
+      <a class="brand" href="/" data-nav aria-label="SQFT"><img src="/logo-mark.png" alt=""><b>SQFT</b></a>
+      <nav aria-label="Sections">
+        <a href="/" data-nav>Engine</a>
+        <a href="/land" data-nav>Land</a>
+        <a href="/stats" data-nav>Stats</a>
+        <a href="/ledger" data-nav>Ledger</a>
+        <a href="/rules" data-nav>Rules</a>
+      </nav>
+      <div class="right">
+        <a class="pill social" href="https://x.com/sqftfun" target="_blank" rel="noopener">@sqftfun</a>
+        <span class="conn" id="conn" title="connecting"><i></i></span>
+      </div>
+    </div>
   </header>
 
-  <nav class="dock" aria-label="Sections">
-    <a href="/" data-nav><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5M5.5 10v10h13V10"/></svg><span>Engine</span></a>
-    <a href="/land" data-nav><svg viewBox="0 0 24 24"><path d="M3 20h18M4 20V9l8-5 8 5v11M9 20v-6h6v6"/></svg><span>Land</span></a>
-    <a href="/survey" data-nav><svg viewBox="0 0 24 24"><path d="M12 3v8M8 21l4-10 4 10M5 11h14"/><circle cx="12" cy="11" r="2"/></svg><span>Survey</span><em class="soon">soon</em></a>
-    <a href="/stats" data-nav><svg viewBox="0 0 24 24"><path d="M4 19h16M5 15l4-5 4 3 6-7"/></svg><span>Stats</span></a>
-    <a href="/leaderboard" data-nav><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-6"/></svg><span>Crews</span></a>
-    <a href="/rounds" data-nav><svg viewBox="0 0 24 24"><path d="M12 4 3 8.5l9 4.5 9-4.5zM3 12.5l9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg><span>Rounds</span></a>
-    <a href="/ledger" data-nav><svg viewBox="0 0 24 24"><path d="M6 4h12v16l-3-2-3 2-3-2-3 2zM9 9h6M9 13h6"/></svg><span>Ledger</span></a>
-    <a href="/benchmark" data-nav><svg viewBox="0 0 24 24"><path d="M4.5 16a8 8 0 1 1 15 0M12 16l4-5"/><circle cx="12" cy="16" r="1.2"/></svg><span>Bench</span></a>
-    <a href="/rules" data-nav><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></svg><span>Rules</span></a>
-  </nav>
-
   <!-- ================= Engine (home) ================= -->
-  <main class="view stage home" data-view="/">
-    <header class="hero">
-      <p class="eyebrow"><span class="brandword">SQFT</span><span id="homeLabel">creator rewards → square feet</span></p>
-      <h1>Fees become<br><em>square feet.</em></h1>
-      <p class="lede">Every creator reward this coin earns is claimed, converted to USDC, bridged to Parcl and spent on long positions in city home-price indices. Measured in square feet, marked daily, for as long as the coin trades.</p>
-    </header>
-
-    <div class="control">
-      <ol class="chips">
-        <li><b>1</b>Claim</li>
-        <li><b>2</b>Convert</li>
-        <li><b>3</b>Bridge</li>
-        <li><b>4</b>Buy land</li>
-      </ol>
-      <div class="ca" id="ca">
-        <span class="ca-k">CA</span>
-        <code id="caValue">dropping at launch</code>
-        <button class="ca-btn" id="caCopy" hidden>Copy</button>
-        <a class="ca-btn" id="caLink" target="_blank" rel="noopener" hidden>pump.fun ↗</a>
+  <main class="view home" data-view="/">
+    <section class="wrap hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Creator rewards <span class="arrow">→</span> city indices</p>
+        <h1>Fees become<br><em>square feet.</em></h1>
+        <p class="lede">Creator rewards converted into exposure to city home-price indices.</p>
+        <div class="actions">
+          <a class="btn" href="/land" data-nav>Explore city indices</a>
+          <a class="btn ghost" href="/rules" data-nav>How it works</a>
+        </div>
+        <div class="ca" id="ca">
+          <span class="ca-k">CA</span>
+          <code id="caValue">dropping at launch</code>
+          <button class="ca-btn" id="caCopy" hidden>Copy</button>
+          <a class="ca-btn" id="caLink" target="_blank" rel="noopener" hidden>pump.fun ↗</a>
+        </div>
       </div>
-      <a class="go wide soon-cta" href="/survey" data-nav title="Side quest, not open yet: your own device will survey from this tab for a share of each round's SOL pot.">Survey land · soon</a>
-    </div>
+      <figure class="hero-art"><img src="/art/hero.jpg" alt="An isometric city block with one lot marked in orange and survey dimensions along its edges" width="837" height="384"></figure>
+    </section>
 
-    <section class="card net">
-      <div class="card-head"><span class="label">Holdings</span><span class="tag" id="hmState">live</span></div>
-      <div class="grid2">
-        <div class="stat"><span class="label">Square feet</span><b id="hmSqft">0</b><em id="hmSqftSub">no lots yet</em></div>
-        <div class="stat"><span class="label">Land value</span><b id="hmValue">$0</b><em id="hmValueSub">at today's index</em></div>
-        <div class="stat"><span class="label">Equity on Parcl</span><b id="hmEquity">$0</b><em id="hmEquitySub">USDC collateral + PnL</em></div>
-        <div class="stat"><span class="label">Fees converted</span><b id="hmSol">0</b><em id="hmSolSub">SOL claimed so far</em></div>
-      </div>
-      <div class="round">
-        <div class="row-between"><span class="label">Next cycle in</span><span class="mono strong" id="hmLeft">–</span></div>
-        <div class="seg" id="hmRuler"></div>
-        <span class="muted small" id="hmVault">vault: –</span>
+    <section class="wrap">
+      <div class="kpis">
+        <div class="kpi"><b id="kpSqft">0 sqft</b><span>Square feet</span></div>
+        <div class="kpi"><b id="kpValue">$0</b><span>Position value</span></div>
+        <div class="kpi"><b id="kpColl">$0</b><span>USDC collateral</span></div>
+        <div class="kpi"><b id="kpStatus">Standby</b><span>Engine status</span></div>
       </div>
     </section>
 
-    <section class="card rig">
-      <div class="card-head"><span class="label">The loop</span><span class="state" id="hmLoopState"><i></i><b>idle</b></span></div>
-      <ol class="loop" id="hmLoop"></ol>
+    <section class="wrap markets">
+      <h2 class="h2">Eight markets. One growing footprint.</h2>
+      <div id="lotWrap"><div class="lotgrid" id="lotGrid"></div></div>
     </section>
 
-    <section class="card earn">
-      <div class="card-head"><span class="label">Lots</span><a class="muted mono small" href="/land" data-nav>all ↗</a></div>
-      <ol class="lots" id="hmLots"></ol>
-      <div class="card-head sub"><span class="label">Receipts</span><span class="muted small" id="hmAccount">parcl account –</span></div>
-      <ol class="rounds receipts" id="hmReceipts"></ol>
+    <section class="wrap duo">
+      <div class="panel">
+        <div class="panel-head"><h2 class="h2">The engine</h2><span class="state" id="hmLoopState"><i></i><b>standby</b></span></div>
+        <ol class="steps" id="hmSteps">
+          <li data-step="claim"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 11h16v9H4zM2 7h20v4H2zM12 7v13M12 7c-2.5 0-4-1-4-2.5S9.5 2 11 3.5 12 7 12 7zm0 0c2.5 0 4-1 4-2.5S14.5 2 13 3.5 12 7 12 7z"/></svg></span><b>Claim</b><small></small></li>
+          <li class="sep" aria-hidden="true">→</li>
+          <li data-step="convert"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3 3 7.5l9 4.5 9-4.5zM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg></span><b>Convert</b><small></small></li>
+          <li class="sep" aria-hidden="true">→</li>
+          <li data-step="bridge"><span class="ico"><svg viewBox="0 0 24 24"><path d="M10 13a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.5 1.5M14 11a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.5-1.5"/></svg></span><b>Bridge</b><small></small></li>
+          <li class="sep" aria-hidden="true">→</li>
+          <li data-step="buy"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></span><b>Open positions</b><small></small></li>
+        </ol>
+        <div class="cycle">
+          <div class="row-between"><span class="label">Next cycle in</span><span class="mono strong" id="hmLeft">–</span></div>
+          <div class="seg" id="hmRuler"></div>
+          <span class="muted small" id="hmVault">vault: –</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2 class="h2">Latest activity</h2><span class="muted small" id="hmAccount">parcl account –</span></div>
+        <ol class="activity" id="hmActivity"></ol>
+      </div>
     </section>
+
+    <p class="wrap foot">Index exposure via Parcl. No physical property ownership. <a href="/survey" data-nav>Survey crew · coming soon</a></p>
   </main>
 
   <!-- ================= Survey (browser side quest) ================= -->
-  <main class="view stage" data-view="/survey" hidden>
-    <header class="hero">
-      <p class="eyebrow"><span class="brandword">SQFT</span><span id="roundLabel">round #–</span></p>
-      <h1>Survey land.<br>Get <em>paid.</em></h1>
-      <div class="soon-banner"><b>Coming soon</b><span>The survey crew is in test mode: the allocator and the ledger run, but nothing pays out yet. The engine on the <a href="/" data-nav class="strong">home page</a> is the live product.</span></div>
-      <p class="lede">The side quest: your device plants survey stakes from this tab and the round pot gets split by verified survey work. The real land lives on the <a href="/" data-nav class="strong">engine</a>.</p>
-      <ol class="chips" id="howto">
-        <li><b>1</b>Paste a Solana address</li>
-        <li><b>2</b>Pick how hard to work</li>
-        <li><b>3</b>Press start</li>
-      </ol>
-    </header>
-
-    <div class="control">
-      <div class="settings" id="settings" hidden>
-        <div class="card-head"><span class="label">Crew settings</span><span class="muted small mono" id="cores"></span></div>
-        <label class="ctl"><span>CPU threads</span><input type="range" id="threads" min="1" step="1"><b id="threadsVal"></b></label>
-        <label class="ctl"><span>CPU load</span><input type="range" id="cpuDuty" min="10" max="100" step="5"><b id="cpuDutyVal"></b></label>
-        <label class="ctl switch"><span>GPU (WebGPU)</span><input type="checkbox" id="gpu"><i></i><b id="gpuState">off</b></label>
-        <label class="ctl"><span>GPU load</span><input type="range" id="gpuDuty" min="10" max="100" step="5"><b id="gpuDutyVal"></b></label>
-        <p class="muted small" id="gpuInfo"></p>
-      </div>
-      <div class="bar">
-        <input id="wallet" placeholder="Opens with the survey crew" disabled autocomplete="off" spellcheck="false" aria-label="Solana wallet address">
-        <button class="icon-btn" id="settingsBtn" aria-label="Crew settings" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
-        <button id="go" class="go" disabled>Coming soon</button>
-      </div>
-      <p class="consent">Not open yet. When it is: address only, nothing to sign, CPU used only while surveying, paid automatically at <span class="threshold">0.01</span> SOL.</p>
-    </div>
-
-    <section class="card net">
-      <div class="card-head"><span class="label">Field</span><span class="tag" id="netState">live</span></div>
-      <div class="grid2">
-        <div class="stat"><span class="label">Survey rate</span><b id="poolRate">0</b><em id="poolRateUnit">pts/s</em></div>
-        <div class="stat"><span class="label">Surveyors</span><b id="miners">0</b><em>last minute</em></div>
-        <div class="stat"><span class="label">Stakes</span><b id="ppm">0</b><em>per minute</em></div>
-        <div class="stat"><span class="label">Pot</span><b id="reward">0</b><em>SOL this round</em></div>
-      </div>
-      <div class="round">
-        <div class="row-between"><span class="label">Round closes in</span><span class="mono strong" id="roundLeft">–</span></div>
-        <div class="seg" id="roundRuler"></div>
-        <span class="muted small" id="roundMiners">0 surveyors</span>
+  <main class="view survey" data-view="/survey" hidden>
+    <section class="wrap page-head">
+      <p class="crumb">Side quest / Survey crew <span class="soon">soon</span></p>
+      <div class="titlerow">
+        <div>
+          <h1>Survey land. <em>Get paid.</em></h1>
+          <p class="lede">Your device plants survey stakes from this tab and the round pot gets split by verified survey work. Not open yet: the allocator and the ledger run, but nothing pays out.</p>
+        </div>
+        <span class="status" id="roundLabel">round #–</span>
       </div>
     </section>
-
-    <section class="card rig">
-      <div class="card-head"><span class="label">Your crew</span><span class="state" id="status"><i></i><b>idle</b></span></div>
-      <div class="rig-main">
+    <section class="wrap">
+      <div class="control">
+        <div class="settings" id="settings" hidden>
+          <div class="panel-head"><span class="label">Crew settings</span><span class="muted small mono" id="cores"></span></div>
+          <label class="ctl"><span>CPU threads</span><input type="range" id="threads" min="1" step="1"><b id="threadsVal"></b></label>
+          <label class="ctl"><span>CPU load</span><input type="range" id="cpuDuty" min="10" max="100" step="5"><b id="cpuDutyVal"></b></label>
+          <label class="ctl switch"><span>GPU (WebGPU)</span><input type="checkbox" id="gpu"><i></i><b id="gpuState">off</b></label>
+          <label class="ctl"><span>GPU load</span><input type="range" id="gpuDuty" min="10" max="100" step="5"><b id="gpuDutyVal"></b></label>
+          <p class="muted small" id="gpuInfo"></p>
+        </div>
+        <div class="inputbar">
+          <input id="wallet" placeholder="Opens with the survey crew" disabled autocomplete="off" spellcheck="false" aria-label="Solana wallet address">
+          <button class="icon-btn" id="settingsBtn" aria-label="Crew settings" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+          <button id="go" class="btn" disabled>Coming soon</button>
+        </div>
+        <p class="muted small consent">When it opens: address only, nothing to sign, CPU used only while surveying, paid automatically at <span class="threshold">0.01</span> SOL.</p>
+      </div>
+    </section>
+    <section class="wrap trio">
+      <div class="panel">
+        <div class="panel-head"><h2 class="h2">Field</h2><span class="tag" id="netState">live</span></div>
+        <div class="grid2">
+          <div class="stat"><span class="label">Survey rate</span><b id="poolRate">0</b><em id="poolRateUnit">pts/s</em></div>
+          <div class="stat"><span class="label">Surveyors</span><b id="miners">0</b><em>last minute</em></div>
+          <div class="stat"><span class="label">Stakes</span><b id="ppm">0</b><em>per minute</em></div>
+          <div class="stat"><span class="label">Pot</span><b id="reward">0</b><em>SOL this round</em></div>
+        </div>
+        <div class="cycle">
+          <div class="row-between"><span class="label">Round closes in</span><span class="mono strong" id="roundLeft">–</span></div>
+          <div class="seg" id="roundRuler"></div>
+          <span class="muted small" id="roundMiners">0 surveyors</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2 class="h2">Your crew</h2><span class="state" id="status"><i></i><b>idle</b></span></div>
         <div class="stat big"><span class="label">Rate</span><b id="rate">0</b><em id="rateUnit">pts/s</em></div>
         <canvas id="spark" height="56"></canvas>
+        <div class="grid2 tight">
+          <div class="stat"><span class="label">Grid size</span><b id="diff">–</b><em>bits</em></div>
+          <div class="stat"><span class="label">Stakes</span><b id="proofs">0</b><em id="rej">0 rejected</em></div>
+        </div>
+        <div class="digest"><span class="label">Last stake</span><code id="digest">waiting for a stake</code></div>
+        <ol class="ticker" id="log"></ol>
       </div>
-      <div class="grid2 tight">
-        <div class="stat"><span class="label">Grid size</span><b id="diff">–</b><em>bits</em></div>
-        <div class="stat"><span class="label">Stakes</span><b id="proofs">0</b><em id="rej">0 rejected</em></div>
+      <div class="panel">
+        <div class="panel-head"><h2 class="h2">Earnings</h2><span class="muted mono small" id="youAddr">no address</span></div>
+        <div class="grid3">
+          <div class="stat"><span class="label">This round</span><b id="share">0%</b><em id="est">≈ 0 SOL</em></div>
+          <div class="stat"><span class="label">Unpaid</span><b id="balance">0</b><em id="pendingNote">SOL</em></div>
+          <div class="stat"><span class="label">Paid</span><b id="paid">0</b><em>SOL total</em></div>
+        </div>
+        <div class="seg" id="thresholdRuler"></div>
+        <p class="muted small" id="thresholdText">0% of the 0.01 SOL payout threshold</p>
+        <div class="panel-head sub"><span class="label">Recent rounds</span><span class="muted small">pot, SOL</span></div>
+        <ol class="rounds" id="rounds"></ol>
+        <p class="muted small links"><a href="/leaderboard" data-nav>Crews</a> · <a href="/rounds" data-nav>Rounds</a> · <a href="/benchmark" data-nav>Benchmark</a></p>
       </div>
-      <div class="digest"><span class="label">Last stake</span><code id="digest">waiting for a stake</code></div>
-      <ol class="ticker" id="log"></ol>
-    </section>
-
-    <section class="card earn">
-      <div class="card-head"><span class="label">Earnings</span><span class="muted mono small" id="youAddr">no address</span></div>
-      <div class="grid3">
-        <div class="stat"><span class="label">This round</span><b id="share">0%</b><em id="est">≈ 0 SOL</em></div>
-        <div class="stat"><span class="label">Unpaid</span><b id="balance">0</b><em id="pendingNote">SOL</em></div>
-        <div class="stat"><span class="label">Paid</span><b id="paid">0</b><em>SOL total</em></div>
-      </div>
-      <div class="seg" id="thresholdRuler"></div>
-      <p class="muted small" id="thresholdText">0% of the 0.01 SOL payout threshold</p>
-      <div class="card-head sub"><span class="label">Recent rounds</span><span class="muted small">pot, SOL</span></div>
-      <ol class="rounds" id="rounds"></ol>
     </section>
   </main>
 
-  <!-- ================= Other pages (the drawer) ================= -->
+  <!-- ================= Pages ================= -->
   <main class="view page" data-view="page" hidden>
-    <div class="sheet">
-      <a class="close" href="/" data-nav aria-label="Back to the map">× map</a>
+    <div class="wrap">
 
       <article data-page="/land" hidden>
-        <p class="eyebrow"><span class="brandword">SQFT</span>land</p>
-        <h1>Fees buy square feet.</h1>
-        <p class="lede">The coin's creator rewards become USDC collateral on Parcl and long positions in real estate price indices, one per city, measured in square feet of the index. Every hop is a receipt: Solana transactions, a bridge deposit you can see land, and a Parcl account anyone can read.</p>
-        <div class="grid4">
-          <div class="stat"><span class="label">Square feet held</span><b id="ldSqft">0</b><em id="ldSqftSub">across 0 cities</em></div>
-          <div class="stat"><span class="label">Land value</span><b id="ldValue">$0</b><em id="ldValueSub">at today's index</em></div>
-          <div class="stat"><span class="label">Unrealized</span><b id="ldPnl">$0</b><em id="ldPnlSub">since entry</em></div>
-          <div class="stat"><span class="label">Rewards converted</span><b id="ldUsd">$0</b><em id="ldUsdSub">bridged to Parcl</em></div>
+        <p class="crumb">Portfolio / City indices</p>
+        <div class="titlerow">
+          <div>
+            <h1>Your footprint, city by city.</h1>
+            <p class="lede">Track index exposure across eight housing markets.</p>
+          </div>
+          <span class="status" id="ldStatus">Pre-launch · No positions yet</span>
         </div>
-        <div class="flow">
-          <div><span>01</span><b>Claim</b><p>The engine wallet claims the coin's creator rewards from pump.fun. <code>SOL</code>, on chain.</p></div>
-          <div><span>02</span><b>Convert</b><p>Everything above a gas reserve is swapped on Solana through <code>Jupiter</code> into <b>USDC</b>, the only collateral the Parcl bridge accepts. One transaction, the signature is the receipt.</p></div>
-          <div><span>03</span><b>Bridge</b><p>The USDC is deposited into the <b>Parcl bridge program</b> on Solana (minimum $5 per deposit). The deposit is credited to the Parcl account owned by the very same key, so nothing is custodied by a third party in between.</p></div>
-          <div><span>04</span><b>Buy land</b><p>Free collateral becomes <b>long positions</b> on the city indices in the target book, cheapest deficit first, with IOC market orders at <b>1x</b>: notional equals collateral, no borrowing. One unit of a market is one square foot of its index.</p></div>
-          <div><span>05</span><b>Hold</b><p>Parcl Labs publishes each index once a day (7:50 AM ET). Positions are marked to that print; the only carry is the hourly funding rate, shown per lot below. Square feet never get sold by the engine.</p></div>
-          <div><span>06</span><b>Repeat</b><p id="ldEvery">Every 10 minutes.</p></div>
+        <div class="kpis">
+          <div class="kpi"><b id="ldSqft">0 sqft</b><span>Total exposure</span></div>
+          <div class="kpi"><b id="ldValue">$0</b><span>Position value</span></div>
+          <div class="kpi"><b id="ldColl">$0</b><span>Collateral</span></div>
+          <div class="kpi"><b id="ldMarkets">8</b><span>Markets tracked</span></div>
         </div>
+        <div class="duo land-duo">
+          <div class="panel">
+            <div class="panel-head"><h2 class="h2">City markets</h2><span class="muted small" id="ldOracle">index · daily</span></div>
+            <div class="table-wrap plain"><table class="table markets-table" id="ldLots"></table></div>
+          </div>
+          <aside class="panel side">
+            <img src="/art/land.jpg" alt="A white architectural model of a city with one block marked in orange" width="563" height="328">
+            <h3 id="ldSideTitle">A footprint starts with the first cycle.</h3>
+            <p id="ldSideText">No positions yet. When the engine runs a cycle, rewards are converted to USDC, bridged to Parcl, and the first city index positions open here.</p>
+            <a class="btn" href="/" data-nav>View the engine →</a>
+          </aside>
+        </div>
+        <ol class="steprow">
+          <li><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 11h16v9H4zM2 7h20v4H2zM12 7v13M12 7c-2.5 0-4-1-4-2.5S9.5 2 11 3.5 12 7 12 7zm0 0c2.5 0 4-1 4-2.5S14.5 2 13 3.5 12 7 12 7z"/></svg></span><i>1</i><b>Claim creator rewards</b></li>
+          <li><span class="ico"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span><i>2</i><b>Convert to USDC</b></li>
+          <li><span class="ico"><svg viewBox="0 0 24 24"><path d="M2 17h20M4 17v-6M20 17v-6M4 11c4-5 12-5 16 0M8 17v-4M12 17v-5M16 17v-4"/></svg></span><i>3</i><b>Bridge to Parcl</b></li>
+          <li><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3 3 7.5l9 4.5 9-4.5zM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg></span><i>4</i><b>Open index positions</b></li>
+        </ol>
+        <h2 class="h2 section">Accounts &amp; receipts</h2>
         <div class="kv" id="ldLinks"></div>
-        <h2 class="section">Lots</h2>
-        <div class="table-wrap"><table class="table" id="ldLots"></table></div>
-        <h2 class="section">Receipts</h2>
         <div class="table-wrap"><table class="table" id="ldLedger"></table></div>
         <p class="muted small" id="ldNote"></p>
+        <p class="foot">City home-price index exposure via Parcl. No physical property ownership.</p>
       </article>
 
       <article data-page="/leaderboard" hidden>
-        <p class="eyebrow"><span class="brandword">SQFT</span>crews</p>
+        <p class="crumb">Survey crew / Crews</p>
         <h1>Crews</h1>
         <p class="lede">Who is surveying, and how each round's pot is shared.</p>
         <div class="tabs" id="boardTabs">
@@ -210,29 +224,29 @@
           <button data-board="last">Last round</button>
           <button data-board="all">All time</button>
         </div>
-        <div class="grid4">
-          <div class="stat"><span class="label">Survey rate</span><b id="lbRate">0</b><em id="lbRateUnit">pts/s</em></div>
-          <div class="stat"><span class="label">Surveyors</span><b id="lbMiners">0</b><em>last minute</em></div>
-          <div class="stat"><span class="label">Stakes</span><b id="lbProofs">0</b><em>per minute</em></div>
-          <div class="stat"><span class="label">Round</span><b id="lbRound">–</b><em id="lbLeft">–</em></div>
+        <div class="kpis">
+          <div class="kpi"><b id="lbRate">0</b><span id="lbRateUnit">pts/s</span></div>
+          <div class="kpi"><b id="lbMiners">0</b><span>Surveyors, last minute</span></div>
+          <div class="kpi"><b id="lbProofs">0</b><span>Stakes per minute</span></div>
+          <div class="kpi"><b id="lbRound">–</b><span id="lbLeft">–</span></div>
         </div>
         <div class="table-wrap"><table class="table" id="board"></table></div>
         <p class="muted small">Share is your verified survey work in the period divided by everyone's. A stake at grid size <i>d</i> counts as 2<sup>d</sup> points.</p>
       </article>
 
       <article data-page="/stats" hidden>
-        <p class="eyebrow"><span class="brandword">SQFT</span>stats</p>
+        <p class="crumb">Engine / Stats</p>
         <h1>Stats</h1>
         <p class="lede">The land first: square feet and value over time. Then the survey crew: rate, surveyors, pots and payouts.</p>
         <div class="charts">
           <figure class="chart-card"><figcaption><span class="label">Square feet held</span><span class="muted small">marks every 15 min</span></figcaption><div class="chart"><canvas id="chSqft"></canvas></div></figure>
-          <figure class="chart-card"><figcaption><span class="label">Land value</span><span class="muted small">USD at the index</span></figcaption><div class="chart"><canvas id="chValue"></canvas></div></figure>
+          <figure class="chart-card"><figcaption><span class="label">Position value</span><span class="muted small">USD at the index</span></figcaption><div class="chart"><canvas id="chValue"></canvas></div></figure>
         </div>
-        <div class="grid4">
-          <div class="stat"><span class="label">Paid out</span><b id="stPaid">0</b><em>SOL, all time</em></div>
-          <div class="stat"><span class="label">Rounds</span><b id="stRounds">0</b><em>settled</em></div>
-          <div class="stat"><span class="label">Surveyors</span><b id="stWallets">0</b><em>addresses, all time</em></div>
-          <div class="stat"><span class="label">Surveyed</span><b id="stWork">0</b><em>points verified</em></div>
+        <div class="kpis">
+          <div class="kpi"><b id="stPaid">0</b><span>SOL paid out, all time</span></div>
+          <div class="kpi"><b id="stRounds">0</b><span>Rounds settled</span></div>
+          <div class="kpi"><b id="stWallets">0</b><span>Surveyors, all time</span></div>
+          <div class="kpi"><b id="stWork">0</b><span>Points verified</span></div>
         </div>
         <div class="charts">
           <figure class="chart-card"><figcaption><span class="label">Survey rate</span><span class="muted small">last 24 h</span></figcaption><div class="chart"><canvas id="chHash"></canvas></div></figure>
@@ -246,13 +260,13 @@
       </article>
 
       <article data-page="/rounds" hidden>
-        <p class="eyebrow"><span class="brandword">SQFT</span>rounds</p>
+        <p class="crumb">Survey crew / Rounds</p>
         <div id="roundsList">
           <h1>Rounds</h1>
           <p class="lede">Every settled round. Open one to see exactly how its pot was split and paid.</p>
           <label class="ctl switch inline"><input type="checkbox" id="roundsAll"><i></i><span>Show rounds nobody surveyed in</span></label>
           <div class="table-wrap"><table class="table clickable" id="roundsTable"></table></div>
-          <button class="ghost" id="roundsMore" hidden>Load older rounds</button>
+          <button class="btn ghost" id="roundsMore" hidden>Load older rounds</button>
         </div>
         <div id="roundDetail" hidden>
           <div class="row-between round-nav">
@@ -261,32 +275,32 @@
           </div>
           <h1 id="rdTitle">Round</h1>
           <p class="lede" id="rdWhen"></p>
-          <div class="grid4">
-            <div class="stat"><span class="label">Pot</span><b id="rdPot">0</b><em>SOL split</em></div>
-            <div class="stat"><span class="label">Surveyors</span><b id="rdMiners">0</b><em>with credited work</em></div>
-            <div class="stat"><span class="label">Surveyed</span><b id="rdWork">0</b><em>points</em></div>
-            <div class="stat"><span class="label">Payouts</span><b id="rdPayouts">0</b><em>sent at close</em></div>
+          <div class="kpis">
+            <div class="kpi"><b id="rdPot">0</b><span>SOL split</span></div>
+            <div class="kpi"><b id="rdMiners">0</b><span>Surveyors with credited work</span></div>
+            <div class="kpi"><b id="rdWork">0</b><span>Points surveyed</span></div>
+            <div class="kpi"><b id="rdPayouts">0</b><span>Payouts sent at close</span></div>
           </div>
-          <h2 class="section">How the pot was split</h2>
+          <h2 class="h2 section">How the pot was split</h2>
           <div class="table-wrap"><table class="table" id="rdShares"></table></div>
-          <h2 class="section">Payouts from this round</h2>
+          <h2 class="h2 section">Payouts from this round</h2>
           <div class="table-wrap"><table class="table" id="rdPayoutTable"></table></div>
         </div>
       </article>
 
       <article data-page="/benchmark" hidden>
-        <p class="eyebrow"><span class="brandword">SQFT</span>benchmark</p>
+        <p class="crumb">Survey crew / Benchmark</p>
         <h1>Benchmark</h1>
         <p class="lede">Measure this device: 5 seconds of survey work on every CPU thread, then 5 seconds on the GPU. Nothing is sent while it runs.</p>
         <div class="bench">
-          <div class="bench-run">
+          <div class="panel bench-run">
             <div class="row-between"><span class="label" id="bnPhase">Ready</span><span class="muted small mono" id="bnDevice"></span></div>
             <div class="bench-rate"><b id="bnRate">0</b><em id="bnUnit">pts/s</em></div>
             <div class="seg" id="bnProgress"></div>
-            <button class="go" id="bnGo">Run benchmark</button>
+            <button class="btn" id="bnGo">Run benchmark</button>
             <p class="muted small" id="bnNote"></p>
           </div>
-          <div class="bench-result" id="bnResult" hidden>
+          <div class="panel bench-result" id="bnResult" hidden>
             <div class="grid3">
               <div class="stat"><span class="label">CPU</span><b id="bnCpu">–</b><em id="bnCpuSub"></em></div>
               <div class="stat"><span class="label">GPU</span><b id="bnGpu">–</b><em id="bnGpuSub"></em></div>
@@ -301,26 +315,36 @@
               </div>
               <ol class="calc-steps" id="cSteps"></ol>
             </div>
-            <button class="ghost" id="bnSave">Add to the device table</button>
+            <button class="btn ghost" id="bnSave">Add to the device table</button>
           </div>
         </div>
-        <h2 class="section">Devices tested</h2>
+        <h2 class="h2 section">Devices tested</h2>
         <div class="table-wrap"><table class="table" id="benchTable"></table></div>
         <p class="muted small">Self-reported by the browser that ran the test. Shown for comparison only; it never affects credit.</p>
       </article>
 
       <article data-page="/ledger" hidden>
-        <p class="eyebrow"><span class="brandword">SQFT</span>ledger</p>
+        <p class="crumb">Survey crew / Ledger</p>
         <h1>Ledger</h1>
-        <p class="lede">Every survey payout, with its transaction. Balances are paid at round close once they cross the threshold.</p>
+        <p class="lede">Every survey payout, with its transaction. Balances are paid at round close once they cross the threshold. The engine's own receipts live on <a href="/land" data-nav class="strong">Land</a>.</p>
         <div class="kv" id="treasury"></div>
         <div class="table-wrap"><table class="table" id="ledger"></table></div>
       </article>
 
       <article data-page="/rules" hidden>
-        <p class="eyebrow"><span class="brandword">SQFT</span>how it works</p>
+        <p class="crumb">How it works</p>
         <h1>How it works</h1>
-        <p class="lede">Two machines share this site. The <a href="/land" data-nav class="strong">engine</a> turns fees into square feet. The survey crew, below, is a browser pool that will split SOL pots by proof of work.</p>
+        <p class="lede">Two machines share this site. The <a href="/land" data-nav class="strong">engine</a> turns fees into square feet. The survey crew is a browser pool that will split SOL pots by proof of work.</p>
+        <h2 class="h2 section">The engine</h2>
+        <div class="flow">
+          <div><span>01</span><b>Claim</b><p>The engine wallet claims the coin's creator rewards from pump.fun. <code>SOL</code>, on chain.</p></div>
+          <div><span>02</span><b>Convert</b><p>Everything above a gas reserve is swapped on Solana through <code>Jupiter</code> into <b>USDC</b>, the only collateral the Parcl bridge accepts. One transaction, the signature is the receipt.</p></div>
+          <div><span>03</span><b>Bridge</b><p>The USDC is deposited into the <b>Parcl bridge program</b> on Solana (minimum $5 per deposit). The deposit is credited to the Parcl account owned by the very same key, so nothing is custodied by a third party in between.</p></div>
+          <div><span>04</span><b>Open positions</b><p>Free collateral becomes <b>long positions</b> on the city indices in the target book, cheapest deficit first, with IOC market orders at <b>1x</b>: notional equals collateral, no borrowing. One unit of a market is one square foot of its index.</p></div>
+          <div><span>05</span><b>Hold</b><p>Parcl Labs publishes each index once a day (7:50 AM ET). Positions are marked to that print; the only carry is the hourly funding rate. Square feet never get sold by the engine.</p></div>
+          <div><span>06</span><b>Repeat</b><p id="ldEvery">Every 10 minutes.</p></div>
+        </div>
+        <h2 class="h2 section">The survey crew</h2>
         <div class="flow">
           <div><span>01</span><b>Ticket</b><p>Your tab asks the server for a plot bound to your address: a random 32-byte <code>seed</code> and a <code>grid size</code> in bits. Tickets last two minutes.</p></div>
           <div><span>02</span><b>Walk the grid</b><p>Web Workers on your CPU and a WebGPU compute shader on your GPU hash <code>seed ‖ counter</code>, looking for a point whose hash starts with <code>grid size</code> zero bits.</p></div>
@@ -330,9 +354,10 @@
           <div><span>06</span><b>Round</b><p id="fundingRule">At round close the pot is split by share of verified survey work. Balances over the threshold are paid out and logged in the ledger.</p></div>
         </div>
         <p class="muted small" id="rulesConfig"></p>
-        <h2 class="section">Photo credits</h2>
-        <p class="lede">The lots on the map show real photographs of each city, from Wikimedia Commons.</p>
-        <ul class="credits"><li><b>USA</b> · <a href="https://commons.wikimedia.org/wiki/File:Suburbia_by_David_Shankbone.jpg" target="_blank" rel="noopener">Suburbia by David Shankbone.jpg</a> · David Shankbone · CC BY-SA 3.0</li><li><b>New York City</b> · <a href="https://commons.wikimedia.org/wiki/File:One_World_Trade_Center_and_New_York_Sunset.jpg" target="_blank" rel="noopener">One World Trade Center and New York Sunset.jpg</a> · ID 2649771 · CC0</li><li><b>Chicago</b> · <a href="https://commons.wikimedia.org/wiki/File:Morning_view_of_the_downtown_skyline_from_near_Morgan_Point_along_Lakefront_Trail,_Chicago,_2025.jpg" target="_blank" rel="noopener">Morning view of the downtown skyline from near Morgan Point along Lakefront Trail, Chicago, 2025.jpg</a> · DimiTalen · CC0</li><li><b>Los Angeles</b> · <a href="https://commons.wikimedia.org/wiki/File:Griffith_Observatory_with_Downtown_Los_Angeles_In_The_Background_-_54084315490.jpg" target="_blank" rel="noopener">Griffith Observatory with Downtown Los Angeles In The Background - 54084315490.jpg</a> · The Fun Chronicles · CC0</li><li><b>Miami</b> · <a href="https://commons.wikimedia.org/wiki/File:Miami_skyline_from_Biscayne_Bay,_Florida_LCCN2011634548.tif" target="_blank" rel="noopener">Miami skyline from Biscayne Bay, Florida LCCN2011634548.tif</a> · Carol M. Highsmith · Public domain</li><li><b>Austin</b> · <a href="https://commons.wikimedia.org/wiki/File:Lady_Bird_Lake_in_Austin,_Texas.jpg" target="_blank" rel="noopener">Lady Bird Lake in Austin, Texas.jpg</a> · Rish0203 · CC0</li><li><b>Washington, DC</b> · <a href="https://commons.wikimedia.org/wiki/File:United_States_Capitol_-_west_front_edit.jpg" target="_blank" rel="noopener">United States Capitol - west front edit.jpg</a> · Architect of the Capitol · Public domain</li><li><b>San Francisco</b> · <a href="https://commons.wikimedia.org/wiki/File:San_Francisco_city_skyline.jpg" target="_blank" rel="noopener">San Francisco city skyline.jpg</a> · Lisafern · CC0</li></ul>
+        <h2 class="h2 section">Photo credits</h2>
+        <p class="lede">The market cards show real photographs of each city, from Wikimedia Commons.</p>
+        <ul class="credits" id="credits"></ul>
+        <p class="foot">Index exposure via Parcl. No physical property ownership. Not financial advice.</p>
       </article>
     </div>
   </main>

@@ -1,12 +1,11 @@
-// The lot strip: one photographic card per city index. A real photo of the city,
-// the index in dollars per square foot, today's move, the square feet the coin
-// holds there and a 30-day sparkline. Replaces the old pixel-art map; keeps its
-// small API so the rest of the UI does not care.
+// The market cards: one per city index. A real photo of the city, the ticker,
+// today's move, the index in dollars per square foot, the square feet the coin
+// holds there and a 30-day sparkline.
 //
-//   setLots([{ key, label, city, price, change_1d, sqft, notional, reserved, spark }])
+//   setLots([{ key, label, city, price, change_1d, change_30d, sqft, notional, reserved, spark }])
 //   allocate({ sqft, label })   a purchase: the card flashes and "+sqft" floats up
-//   plant() / sweep()           round-close flash across the strip
-//   setActivity / setBackdrop / resize   kept for compatibility (no-ops or a class toggle)
+//   plant() / sweep()           small flashes for the survey crew and round close
+//   setActivity / setBackdrop / resize   kept for compatibility (no-ops)
 
 const CITY = { USA: 'United States', NYC: 'New York City', Chicago: 'Chicago', LosAngeles: 'Los Angeles', Miami: 'Miami', Austin: 'Austin', WashingtonDC: 'Washington, DC', SanFrancisco: 'San Francisco' };
 const LABEL = { USA: 'USA', NYC: 'NYC', Chicago: 'CHI', LosAngeles: 'LA', Miami: 'MIA', Austin: 'ATX', WashingtonDC: 'DC', SanFrancisco: 'SF' };
@@ -16,12 +15,12 @@ const num = (v, d = 2) => (+Number(v).toFixed(d)).toLocaleString(undefined, { ma
 const sqftFmt = v => { v = Number(v) || 0; return v === 0 ? '0' : v < 0.01 ? v.toFixed(4) : v < 1 ? v.toFixed(3) : v < 100 ? v.toFixed(2) : num(v, 0); };
 const pctFmt = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${(Math.abs(v || 0) * 100).toFixed(2)}%`;
 
-function sparkline(points, w = 64, h = 20) {
+function sparkline(points, w = 64, h = 16) {
   const v = (points ?? []).filter(x => x > 0);
   if (v.length < 2) return '';
   const min = Math.min(...v), max = Math.max(...v), span = max - min || 1;
   const d = v.map((p, i) => `${(i / (v.length - 1) * (w - 2) + 1).toFixed(1)},${(h - 2 - (p - min) / span * (h - 4)).toFixed(1)}`).join(' ');
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polyline points="${d}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polyline points="${d}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
 
 export class LotStrip {
@@ -41,32 +40,34 @@ export class LotStrip {
       let card = this.cards.get(key);
       if (!card) {
         card = document.createElement('article');
-        card.className = 'lotcard';
+        card.className = 'lotcard empty';
         card.dataset.key = key;
         card.innerHTML = `
-          <img class="photo" alt="" decoding="async" src="/cities/${esc(key.toLowerCase())}.jpg">
-          <div class="shade"></div>
-          <header><b class="tag"></b><span class="city"></span></header>
+          <div class="photo-wrap">
+            <img class="photo" alt="" decoding="async" src="/cities/${esc(key.toLowerCase())}.jpg">
+            <div class="shade"></div>
+            <span class="country">USA</span>
+            <b class="tag"></b>
+            <span class="move"></span>
+          </div>
           <footer>
-            <div class="price"><b></b><small>/sqft</small></div>
-            <div class="move"></div>
-            <div class="held"><b></b><small></small></div>
-            <div class="trend"></div>
+            <span class="price"></span>
+            <span class="held"><b></b><span class="trend"></span></span>
           </footer>
           <div class="flash"></div>`;
         this.grid.appendChild(card);
         this.cards.set(key, card);
       }
       card.querySelector('.tag').textContent = d.label ?? LABEL[key] ?? key;
-      card.querySelector('.city').textContent = d.city ?? CITY[key] ?? key;
-      card.querySelector('.price b').textContent = d.price != null ? `$${num(d.price, 2)}` : '–';
+      card.querySelector('.photo').alt = d.city ?? CITY[key] ?? key;
+      card.title = d.city ?? CITY[key] ?? key;
       const mv = card.querySelector('.move');
       const ch = Number(d.change_1d) || 0;
-      mv.textContent = d.price != null ? `${pctFmt(ch)} today` : '';
+      mv.textContent = d.price != null ? pctFmt(ch) : '';
       mv.className = `move ${ch > 0 ? 'up' : ch < 0 ? 'down' : ''}`;
+      card.querySelector('.price').textContent = d.price != null ? `$${num(d.price, 2)} / sqft` : '–';
       const held = Number(d.sqft) || 0, reserved = Number(d.reserved) || 0;
-      card.querySelector('.held b').textContent = `${sqftFmt(held)} sqft`;
-      card.querySelector('.held small').textContent = held > 0 ? `$${num(d.notional ?? held * (d.price ?? 0), 0)} held` : reserved > 0 ? `${sqftFmt(reserved)} under contract` : 'no lot yet';
+      card.querySelector('.held b').textContent = held > 0 ? `${sqftFmt(held)} sqft · $${num(d.notional ?? held * (d.price ?? 0), 0)}` : reserved > 0 ? `${sqftFmt(reserved)} sqft under contract` : 'No position yet';
       card.classList.toggle('empty', held <= 0);
       const trend = card.querySelector('.trend');
       const svg = sparkline(d.spark);
@@ -74,7 +75,6 @@ export class LotStrip {
       trend.className = `trend ${d.change_30d > 0 ? 'up' : d.change_30d < 0 ? 'down' : ''}`;
     }
     for (const [key, card] of this.cards) if (!keys.has(key)) { card.remove(); this.cards.delete(key); }
-    // keep the canonical order
     for (const key of ORDER) { const c = this.cards.get(key); if (c) this.grid.appendChild(c); }
   }
 
@@ -93,7 +93,7 @@ export class LotStrip {
   pulse(card) { card.classList.remove('bought'); void card.offsetWidth; card.classList.add('bought'); }
   plant() { const all = [...this.cards.values()]; if (all.length) this.pulse(all[(Math.random() * all.length) | 0]); }
   sweep() { this.root.classList.remove('sweep'); void this.root.offsetWidth; this.root.classList.add('sweep'); }
-  setBackdrop(on) { this.root.classList.toggle('backdrop', !!on); }
+  setBackdrop() {}
   setActivity() {}
   resize() {}
 }
