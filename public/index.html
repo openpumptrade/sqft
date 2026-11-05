@@ -20,7 +20,7 @@
   <script type="module" src="/app.js"></script>
 </head>
 <body>
-  <canvas id="pit" class="land" aria-label="A pixel-art plat map: eight lots, one per city index, filling up with houses as the coin's fees buy square feet. A surveyor plants a stake for every purchase. Click to send the surveyor out."></canvas>
+  <section id="pit" class="land" aria-label="The eight lots: one card per city index with its photo, index price, today's move and the square feet held"><div class="lotgrid" id="lotGrid"></div></section>
 
   <header class="top">
     <a class="logo" href="/" data-nav aria-label="SQFT"><img src="/logo-small.png" alt=""><b>SQFT</b><small>$SQFT</small></a>
@@ -94,7 +94,6 @@
       <div class="card-head sub"><span class="label">Receipts</span><span class="muted small" id="hmAccount">parcl account –</span></div>
       <ol class="rounds receipts" id="hmReceipts"></ol>
     </section>
-    <span class="hint">click the map to send the surveyor</span>
   </main>
 
   <!-- ================= Survey (browser side quest) ================= -->
@@ -169,7 +168,6 @@
       <div class="card-head sub"><span class="label">Recent rounds</span><span class="muted small">pot, SOL</span></div>
       <ol class="rounds" id="rounds"></ol>
     </section>
-    <span class="hint">click the map to send the surveyor</span>
   </main>
 
   <!-- ================= Other pages (the drawer) ================= -->

@@ -100,7 +100,7 @@ The frontend is static (`public/`, `vercel.json` included). The API runs anywher
 server.js          pool server + static hosting; mounts the engine
 engine/engine.js   the land engine: claim → convert → bridge → buy → hold
 engine/parcl.js    Parcl V4 client: public reads, owner-key signing, the bridge deposit instruction
-public/            the site: index.html, style.css, app.js, land.js (the plat map), the pool modules
+public/            the site: index.html, style.css, app.js, lots.js (the city card strip), cities/ (photos), the pool modules
 tools/pixelart.py  brand art (PIL), regenerates the PNGs in public/
 vendor/pumpkit     Solana / pump.fun toolkit (claims, swaps, transfers)
 ```

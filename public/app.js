@@ -2,7 +2,7 @@
 import { deviceLabel, runBench } from './bench.js';
 import { barChart, lineChart } from './charts.js';
 import { API } from './config.js';
-import { LandScene } from './land.js';
+import { LotStrip } from './lots.js';
 import { floatUp, pulse, ripples, roll, scramble, toast } from './fx.js';
 import { Miner as Crew, short } from './miner.js';
 
@@ -22,8 +22,8 @@ const R = (id, v) => roll($(id), v);
 
 ripples('.go, .icon-btn, .tabs button');
 
-const scene = new LandScene($('pit'));
-globalThis.__land = scene;   // for debugging from the console
+const scene = new LotStrip($('pit'));
+globalThis.__lots = scene;   // for debugging from the console
 
 // ---------- formatting ----------
 const sol = lamports => (lamports / 1e9).toLocaleString(undefined, { maximumFractionDigits: 6 });
@@ -81,6 +81,7 @@ function route() {
     renderPool();
   }
   if (path === '/') loadHome();
+  if (path === '/survey') loadStrip();
   if (path === '/stats') loadStats();
   if (path === '/rounds') roundId ? loadRound(Number(roundId)) : loadRounds();
   if (path === '/benchmark') loadBench();
@@ -91,7 +92,7 @@ function route() {
 }
 
 // The map is a framed panel that sits between the hero's controls and the deeds (document coordinates, so it scrolls with the page).
-const mapEl = $('pit'), hintEl = document.querySelector('.hint');
+const mapEl = $('pit');
 function placeMap() {
   const view = document.querySelector('.view.stage:not([hidden])');
   let top, bottom;
@@ -108,8 +109,6 @@ function placeMap() {
   mapEl.dataset.rect = next;
   Object.assign(mapEl.style, { top: `${Math.round(top)}px`, left: `${pad}px`, width: `${width}px`, height: `${Math.round(bottom - top)}px` });
   mapEl.dataset.placed = '1';
-  scene.resize();   // ResizeObserver only fires on render; a background tab would keep the old buffer
-  if (hintEl) Object.assign(hintEl.style, { top: `${Math.round(top) + 8}px`, left: `${pad + 10}px` });
 }
 addEventListener('resize', placeMap);
 setInterval(placeMap, 1500);
@@ -336,6 +335,18 @@ function drawSparks(root) {
   }
 }
 
+// ---------- the lot strip (home and survey) ----------
+function feedStrip(Ld) {
+  scene.setLots((Ld.lots ?? []).map(x => ({ key: x.name, label: x.label, city: x.city, price: x.price, change_1d: x.change_1d, change_30d: x.change_30d, spark: x.spark, sqft: x.sqft, notional: x.notional, reserved: (Ld.reserved ?? []).find(r => r.name === x.name)?.sqft ?? 0 })));
+}
+let stripTimer = null;
+async function loadStrip() {
+  clearTimeout(stripTimer);
+  if (location.pathname !== '/survey') return;
+  try { feedStrip((await getJson('/api/engine')).land); } catch {}
+  stripTimer = setTimeout(loadStrip, 30_000);
+}
+
 // ---------- engine home ----------
 let homeTimer = null, homeData = null, seenOrders = null;
 async function loadHome() {
@@ -395,9 +406,8 @@ function renderHome() {
   setText('figCap', `${sqft(Ld.sqft)} sqft`);
   setText('figSlots', holding ? `${Ld.cities} ${Ld.cities === 1 ? 'lot' : 'lots'} · ${usd(Ld.notional)}` : Ld.reserved_sqft > 0 ? `${sqft(Ld.reserved_sqft)} sqft under contract` : 'no lots yet');
   setText('figIndex', Ld.index ? `USA index $${num(Ld.index, 2)}/sqft` : 'USA index –');
-  scene.setLots((Ld.lots ?? []).map(x => ({ key: x.name, label: x.label, sqft: x.sqft, reserved: (Ld.reserved.find(r => r.name === x.name)?.sqft ?? 0) })));
-  scene.setActivity({ running: holding || f.armed, level: Math.min(1, Math.log2(1 + Ld.sqft * 4) / 8) });
-  // a new buy since the last render sends the surveyor out
+  feedStrip(Ld);
+  // a new buy since the last render lights its card
   const newest = orders[0]?.at ?? 0;
   if (seenOrders != null && newest > seenOrders) for (const o of orders.filter(o => o.at > seenOrders).slice(0, 3)) scene.allocate({ sqft: o.sqft, label: o.label ?? o.name });
   seenOrders = newest;
@@ -504,8 +514,7 @@ function renderCrew() {
   $('log').innerHTML = crew.log.slice(0, 4)
     .map(l => `<li class="${l.tone}">${time(l.at)}  ${esc(l.text)}</li>`).join('');
 
-  // the map: every accepted stake plants one on a lot.
-  if (location.pathname !== '/') scene.setActivity({ running: crew.status === 'mining', level: Math.min(1, (Math.log10(Math.max(1, crew.hashrate)) - 3) / 6) });
+  // the strip: every accepted stake lights a card.
   for (; seen.accepted < crew.accepted; seen.accepted++) {
     scene.plant();
     floatUp($('proofs').parentElement, `+${points(2 ** (crew.lastProof?.difficulty ?? 0))}`);

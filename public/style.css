@@ -54,11 +54,44 @@ code { font-family: var(--mono); font-size: .88em; color: var(--ink-2); }
 
 /* ---------- the map (fixed backdrop, full viewport) ---------- */
 .land {
-  position: absolute; z-index: 2; cursor: pointer; opacity: 0; transition: opacity .6s var(--ease), filter .8s var(--ease);
-  border: 2px solid var(--ink); border-radius: var(--r); box-shadow: var(--drop); background: var(--paper); image-rendering: pixelated;
+  position: absolute; z-index: 2; opacity: 0; transition: opacity .6s var(--ease), filter .8s var(--ease);
+  border: 2px solid var(--ink); border-radius: var(--r); box-shadow: var(--drop); background: var(--paper-2); padding: 8px; overflow: hidden;
 }
 .land[data-placed] { opacity: 1; }
 body.backdrop .land { filter: saturate(.75) brightness(.96); }
+.lotgrid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; height: 100%; }
+.lotcard {
+  position: relative; min-width: 0; overflow: hidden; border-radius: 8px; background: var(--ink); color: #fff; isolation: isolate;
+  box-shadow: inset 0 0 0 1px rgba(28,42,30,.25); transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.lotcard:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px rgba(28,42,30,.25), 0 10px 24px -12px rgba(28,42,30,.5); }
+.lotcard .photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s var(--ease); }
+.lotcard:hover .photo { transform: scale(1.04); }
+.lotcard .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,16,12,.55) 0%, rgba(10,16,12,0) 32%, rgba(10,16,12,0) 45%, rgba(10,16,12,.82) 100%); }
+.lotcard header { position: absolute; left: 10px; right: 10px; top: 9px; display: flex; align-items: center; gap: 7px; min-width: 0; }
+.lotcard .tag { flex: none; font: 700 10px/1 var(--mono); letter-spacing: .08em; padding: 4px 6px; border-radius: 4px; background: rgba(251,247,238,.92); color: var(--ink); }
+.lotcard .city { font: 500 11.5px/1.2 var(--sans); color: rgba(255,255,255,.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.lotcard footer { position: absolute; left: 10px; right: 10px; bottom: 9px; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; gap: 1px 8px; align-items: end; }
+.lotcard .price { grid-column: 1; display: flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+.lotcard .price b { font: 600 19px/1 var(--serif); letter-spacing: -.01em; }
+.lotcard .price small { font: 400 10px var(--mono); color: rgba(255,255,255,.7); }
+.lotcard .move { grid-column: 1; font: 600 10.5px var(--mono); color: rgba(255,255,255,.75); white-space: nowrap; }
+.lotcard .move.up { color: #8fe3a0; } .lotcard .move.down { color: #ff9a8a; }
+.lotcard .held { grid-column: 2; grid-row: 1; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; white-space: nowrap; }
+.lotcard .held b { font: 600 12px var(--mono); }
+.lotcard .held small { font: 400 10px var(--sans); color: rgba(255,255,255,.72); }
+.lotcard .trend { grid-column: 2; grid-row: 2; justify-self: end; color: rgba(255,255,255,.8); height: 20px; }
+.lotcard .trend.up { color: #8fe3a0; } .lotcard .trend.down { color: #ff9a8a; }
+.lotcard .trend svg { display: block; }
+.lotcard.empty .held b { color: rgba(255,255,255,.8); }
+.lotcard .flash { position: absolute; inset: 0; background: var(--accent); opacity: 0; pointer-events: none; }
+.lotcard.bought .flash { animation: lot-flash 1.1s var(--ease); }
+@keyframes lot-flash { 0% { opacity: .55; } 100% { opacity: 0; } }
+.lotcard .floater { left: auto; right: 10px; top: 36px; color: #fff; font-size: 13px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.lotcard { container-type: inline-size; }
+@container (max-width: 200px) { .lotcard .held small, .lotcard .trend { display: none; } .lotcard .held b { font-size: 11px; } }
+@container (max-width: 140px) { .lotcard .city { display: none; } .lotcard .price b { font-size: 16px; } }
+.land.sweep::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(228,87,27,.35), transparent) 0 0 / 30% 100% no-repeat; animation: sweep 1.2s var(--ease); }
 body.backdrop::before { content: ''; position: fixed; inset: 0; z-index: 4; background: rgba(239, 230, 210, .42); pointer-events: none; }
 
 /* ---------- top bar ---------- */
@@ -120,9 +153,6 @@ body.backdrop .fig { opacity: .5; }
 .net { grid-area: net; align-self: end; }
 .rig { grid-area: rig; align-self: end; }
 .earn { grid-area: earn; align-self: end; }
-.hint { position: absolute; left: 30px; top: 0; pointer-events: none !important; font: 11px var(--mono); color: var(--ink-2); opacity: .85; z-index: 3; text-shadow: 0 0 4px var(--paper); }
-.is-lending .hint { opacity: 0; transition: opacity 1s; }
-
 .eyebrow { display: flex; gap: 10px; align-items: center; justify-content: center; margin: 0 0 10px; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
 .brandword { display: inline-flex; align-items: center; gap: 7px; color: var(--paper-2); background: var(--ink); padding: 4px 8px; border-radius: var(--r2); font-weight: 600; letter-spacing: .14em; }
 .hero h1 { font: 700 clamp(40px, 4.6vw, 66px)/.96 var(--serif); letter-spacing: -.025em; margin: 0 0 12px; color: var(--ink); }
@@ -469,8 +499,9 @@ h2.section { font: 600 22px var(--serif); letter-spacing: -.01em; margin: 26px 0
 @media (max-width: 1100px) {
   .view.stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: "hero hero" "control control" "band band" "net net" "rig earn"; }
   .view.stage::before { content: ''; grid-area: band; height: 34vh; }
+  .lotgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: 1fr 1fr; }
   .home .control { gap: 8px; }
-  .fig, .hint { display: none; }
+  .fig { display: none; }
   .lots { grid-template-columns: 1fr; }
 }
 @media (max-width: 720px) {
@@ -492,6 +523,9 @@ h2.section { font: 600 22px var(--serif); letter-spacing: -.01em; margin: 26px 0
   .dock a { padding: 6px 9px 5px; }
   .dock a span { display: none; }
   .view.page { padding: 22px 14px 110px; width: 100vw; border-left: 0; }
+  .land { padding: 6px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .lotgrid { grid-template-columns: repeat(8, 168px); grid-template-rows: 1fr; gap: 6px; }
+  .lotcard { scroll-snap-align: start; }
   .grid4 { grid-template-columns: 1fr 1fr; }
   .flow { grid-template-columns: 1fr; }
   .charts, .bench { grid-template-columns: 1fr; }
