@@ -141,16 +141,16 @@ h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
 .panel { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 22px 24px; min-width: 0; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
 .panel-head.sub { margin: 16px 0 6px; }
-.steps { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; }
-.steps li:not(.sep) { flex: 1 1 120px; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: center; padding: 12px 14px; border: 1px solid var(--line-2); border-radius: var(--r2); background: var(--card); min-width: 0; transition: border-color .3s, background .3s; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 8px; flex-wrap: nowrap; }
+.steps li:not(.sep) { flex: 1 1 120px; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; align-items: center; padding: 12px 12px; border: 1px solid var(--line-2); border-radius: var(--r2); background: var(--card); min-width: 0; transition: border-color .3s, background .3s; }
 .steps li .ico { grid-row: 1 / span 2; width: 26px; height: 26px; color: var(--accent); }
 .steps li .ico svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.steps li b { font-weight: 500; font-size: 14.5px; white-space: nowrap; }
+.steps li b { font-weight: 500; font-size: 14px; line-height: 1.15; min-width: 0; overflow-wrap: anywhere; }
 .steps li small { font: 11px var(--mono); color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .steps li small:empty { display: none; }
 .steps li.on { border-color: var(--good); background: rgba(46,125,74,.06); }
 .steps li.wait { border-color: var(--accent); background: var(--accent-soft); }
-.steps li.sep { display: grid; place-items: center; color: var(--accent); font-size: 18px; flex: none; }
+.steps li.sep { display: grid; place-items: center; color: var(--accent); font-size: 18px; flex: none; width: 14px; }
 .cycle { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line-2); display: flex; flex-direction: column; gap: 8px; }
 .seg { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }
 .seg span { height: 6px; border-radius: 2px; background: var(--line); transition: background .4s; }
